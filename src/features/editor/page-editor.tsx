@@ -69,7 +69,7 @@ import SearchNavigationDialog from "@/features/editor/components/search-and-repl
 import { useSearchNavigationParams } from "@/features/editor/components/search-and-replace/use-search-navigation-params.ts";
 import { useDebouncedCallback, useDocumentVisibility } from "@mantine/hooks";
 import { useIdle } from "@/hooks/use-idle.ts";
-import { queryClient } from "@/main.tsx";
+import { queryClient } from "@/lib/query-client";
 import { IPage } from "@/features/page/types/page.types.ts";
 import { useParams, useSearchParams } from "react-router-dom";
 import { extractPageSlugId, platformModifierKey } from "@/lib";

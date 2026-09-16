@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 import { getFileImportSizeLimit } from "@/lib/config.ts";
 import { formatBytes } from "@/lib";
 import { getFileTaskById } from "@/features/file-task/services/file-task-service.ts";
-import { queryClient } from "@/main.tsx";
+import { queryClient } from "@/lib/query-client";
 import { useQueryEmit } from "@/features/websocket/use-query-emit.ts";
 import bytes from "bytes";
 

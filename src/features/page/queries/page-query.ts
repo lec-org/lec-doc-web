@@ -30,7 +30,7 @@ import {
 } from "@/features/page/types/page.types";
 import { notifications } from "@mantine/notifications";
 import { IPagination, QueryParams } from "@/lib/types.ts";
-import { queryClient } from "@/main.tsx";
+import { queryClient } from "@/lib/query-client";
 import { buildTree } from "@/features/page/tree/utils";
 import { useEffect } from "react";
 import { validate as isValidUuid } from "uuid";

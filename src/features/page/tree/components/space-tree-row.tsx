@@ -13,7 +13,7 @@ import {
 } from "@tabler/icons-react";
 
 import EmojiPicker from "@/components/ui/emoji-picker.tsx";
-import { queryClient } from "@/main.tsx";
+import { queryClient } from "@/lib/query-client";
 import { buildPageUrl } from "@/features/page/page.utils.ts";
 import { getPageTitle } from "@/features/page/page.utils";
 import { getPageById } from "@/features/page/services/page-service.ts";

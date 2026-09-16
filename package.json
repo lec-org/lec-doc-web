@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.tsx\" \"src/**/*.ts\"",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:community": "node node_modules/@lec/doc-editor/scripts/community-guard.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "1.8.1",
@@ -135,5 +136,6 @@
     "typescript-eslint": "8.57.1",
     "vite": "8.0.16",
     "vitest": "4.1.6"
-  }
+  },
+  "license": "AGPL-3.0-only"
 }
