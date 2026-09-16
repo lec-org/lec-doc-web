@@ -1,19 +1,18 @@
 import axios, { AxiosInstance } from "axios";
 import APP_ROUTE from "@/lib/app-route.ts";
-import { isCloud } from "@/lib/config.ts";
+import { clearProtectedState } from "@/features/auth/protected-session";
 
 const api: AxiosInstance = axios.create({
   baseURL: "/api",
   withCredentials: true,
+  xsrfCookieName: "lecCsrf",
+  xsrfHeaderName: "x-lec-csrf",
 });
 
 api.interceptors.response.use(
   (response) => {
     // we need the response headers for these endpoints
-    const exemptEndpoints = [
-      "/api/pages/export",
-      "/api/spaces/export",
-    ];
+    const exemptEndpoints = ["/api/pages/export", "/api/spaces/export"];
     if (response.request.responseURL) {
       const path = new URL(response.request.responseURL)?.pathname;
       if (path && exemptEndpoints.includes(path)) {
@@ -23,49 +22,25 @@ api.interceptors.response.use(
 
     return response.data;
   },
-  (error) => {
-    if (error.response) {
-      switch (error.response.status) {
-        case 401: {
-          const url = new URL(error.request.responseURL)?.pathname;
-          if (url === "/api/auth/collab-token") return;
-          if (window.location.pathname.startsWith("/share/")) return;
-          // public docs probe authed endpoints; reject without the login redirect
-          if (
-            window.location.pathname === "/docs" ||
-            window.location.pathname.startsWith("/docs/")
-          ) {
-            break;
-          }
-
-          // Handle unauthorized error
-          redirectToLogin();
-          break;
+  async (error) => {
+    const status = error.response?.status;
+    if (status === 401 || status === 403) {
+      const publicPage = /^\/(login|docs|share)(\/|$)/.test(
+        window.location.pathname,
+      );
+      const anonymousProbe =
+        status === 401 &&
+        publicPage &&
+        !document.cookie
+          .split(";")
+          .some((cookie) => cookie.trim().startsWith("lecCsrf="));
+      if (!anonymousProbe) {
+        try {
+          await clearProtectedState();
+          if (status === 401) redirectToLogin();
+        } catch {
+          // 清理失败时保留锁定界面，不重新显示缓存文档。
         }
-        case 403:
-          // Handle forbidden error
-          break;
-        case 404:
-          // Handle not found error
-          if (
-            error.response.data.message
-              .toLowerCase()
-              .includes("workspace not found")
-          ) {
-            console.log("workspace not found");
-            if (
-              !isCloud() &&
-              window.location.pathname != APP_ROUTE.AUTH.SETUP
-            ) {
-              window.location.href = APP_ROUTE.AUTH.SETUP;
-            }
-          }
-          break;
-        case 500:
-          // Handle internal server error
-          break;
-        default:
-          break;
       }
     }
     return Promise.reject(error);

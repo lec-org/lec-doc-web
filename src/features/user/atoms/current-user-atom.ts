@@ -1,12 +1,9 @@
-import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { atom, PrimitiveAtom } from "jotai";
 import { ICurrentUser, IUser } from "@/features/user/types/user.types";
 import { IWorkspace } from "@/features/workspace/types/workspace.types";
 
-export const currentUserAtom = atomWithStorage<ICurrentUser | null>(
-  "currentUser",
-  null,
-);
+// 身份仅保存在内存中；刷新后必须重新向服务端验证，不能恢复旧账号资料。
+export const currentUserAtom = atom(null) as PrimitiveAtom<ICurrentUser | null>;
 
 export const userAtom = atom(
   (get) => {
@@ -21,7 +18,7 @@ export const userAtom = atom(
         user: newUser,
       });
     }
-  }
+  },
 );
 
 export const workspaceAtom = atom(
@@ -37,5 +34,5 @@ export const workspaceAtom = atom(
         workspace: newWorkspace,
       });
     }
-  }
+  },
 );

@@ -4,7 +4,6 @@ import Layout from "@/components/layouts/global/layout.tsx";
 import { Error404 } from "@/components/ui/error-404.tsx";
 import { useTrackOrigin } from "@/hooks/use-track-origin";
 
-const SetupWorkspace = lazy(() => import("@/pages/auth/setup-workspace.tsx"));
 const LoginPage = lazy(() => import("@/pages/auth/login"));
 const Home = lazy(() => import("@/pages/dashboard/home"));
 const Page = lazy(() => import("@/pages/page/page"));
@@ -25,9 +24,6 @@ const AccountPreferences = lazy(
 );
 const SpaceHome = lazy(() => import("@/pages/space/space-home.tsx"));
 const PageRedirect = lazy(() => import("@/pages/page/page-redirect.tsx"));
-const InviteSignup = lazy(() => import("@/pages/auth/invite-signup.tsx"));
-const ForgotPassword = lazy(() => import("@/pages/auth/forgot-password.tsx"));
-const PasswordReset = lazy(() => import("./pages/auth/password-reset"));
 const SharedPage = lazy(() => import("@/pages/share/shared-page.tsx"));
 const Shares = lazy(() => import("@/pages/settings/shares/shares.tsx"));
 const ShareLayout = lazy(
@@ -61,10 +57,22 @@ export default function App() {
       <Routes>
         <Route index element={<Navigate to="/home" />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/invites/:invitationId" element={<InviteSignup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/password-reset" element={<PasswordReset />} />
-        <Route path="/setup/register" element={<SetupWorkspace />} />
+        <Route
+          path="/invites/:invitationId"
+          element={<Navigate to="/login" replace />}
+        />
+        <Route
+          path="/forgot-password"
+          element={<Navigate to="/login" replace />}
+        />
+        <Route
+          path="/password-reset"
+          element={<Navigate to="/login" replace />}
+        />
+        <Route
+          path="/setup/register"
+          element={<Navigate to="/login" replace />}
+        />
 
         <Route element={<ShareLayout />}>
           <Route path="/share/:shareId/p/:pageSlug" element={<SharedPage />} />

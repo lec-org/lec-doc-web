@@ -8,8 +8,6 @@ import {
   verifyUserToken,
 } from "@/features/auth/services/auth-service";
 import { useNavigate } from "react-router-dom";
-import { useAtom } from "jotai";
-import { currentUserAtom } from "@/features/user/atoms/current-user-atom";
 import {
   IForgotPassword,
   ILogin,
@@ -21,14 +19,13 @@ import { notifications } from "@mantine/notifications";
 import { IAcceptInvite } from "@/features/workspace/types/workspace.types.ts";
 import { acceptInvitation } from "@/features/workspace/services/workspace-service.ts";
 import APP_ROUTE, { getPostLoginRedirect } from "@/lib/app-route.ts";
-import { RESET } from "jotai/utils";
+import { clearProtectedState } from "@/features/auth/protected-session";
 import { useTranslation } from "react-i18next";
 
 export default function useAuth() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [, setCurrentUser] = useAtom(currentUserAtom);
 
   const handleSignIn = async (data: ILogin) => {
     setIsLoading(true);
@@ -36,7 +33,10 @@ export default function useAuth() {
       await login(data);
       navigate(getPostLoginRedirect());
     } catch (err) {
-      notifications.show({ message: err.response?.data?.message, color: "red" });
+      notifications.show({
+        message: err.response?.data?.message,
+        color: "red",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +47,9 @@ export default function useAuth() {
     try {
       const response = await acceptInvitation(data);
       if (response?.requiresLogin) {
-        notifications.show({ message: t("Account created successfully. Please log in.") });
+        notifications.show({
+          message: t("Account created successfully. Please log in."),
+        });
         navigate(APP_ROUTE.AUTH.LOGIN);
       } else {
         navigate(APP_ROUTE.HOME);
@@ -77,7 +79,9 @@ export default function useAuth() {
       const response = await passwordReset(data);
       if (response?.requiresLogin) {
         notifications.show({
-          message: t("Password reset was successful. Please log in with your new password."),
+          message: t(
+            "Password reset was successful. Please log in with your new password.",
+          ),
         });
         navigate(APP_ROUTE.AUTH.LOGIN);
       } else {
@@ -92,8 +96,7 @@ export default function useAuth() {
   };
 
   const handleLogout = async () => {
-    setCurrentUser(RESET);
-    await logout();
+    await Promise.all([clearProtectedState(), logout()]);
     window.location.replace(`${APP_ROUTE.AUTH.LOGIN}?logout=1`);
   };
 

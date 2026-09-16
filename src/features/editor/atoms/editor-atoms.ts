@@ -1,12 +1,13 @@
-import { atom } from "jotai";
+import { atom, PrimitiveAtom } from "jotai";
 import { Editor } from "@tiptap/core";
 import { PageEditMode } from "@/features/user/types/user.types.ts";
 
-export const pageEditorAtom = atom<Editor | null>(null);
+// strictNullChecks 关闭时显式保留可写 atom 类型，清理阶段需要写入 null。
+export const pageEditorAtom = atom(null) as PrimitiveAtom<Editor | null>;
 
-export const titleEditorAtom = atom<Editor | null>(null);
+export const titleEditorAtom = atom(null) as PrimitiveAtom<Editor | null>;
 
-export const readOnlyEditorAtom = atom<Editor | null>(null);
+export const readOnlyEditorAtom = atom(null) as PrimitiveAtom<Editor | null>;
 
 export const yjsConnectionStatusAtom = atom<string>("");
 

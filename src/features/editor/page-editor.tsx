@@ -8,10 +8,7 @@ import React, {
   useState,
 } from "react";
 import { IndexeddbPersistence } from "y-indexeddb";
-import {
-  WebSocketStatus,
-  onStatelessParameters,
-} from "@hocuspocus/provider";
+import { WebSocketStatus, onStatelessParameters } from "@hocuspocus/provider";
 import {
   HocuspocusProviderWebsocketComponent,
   HocuspocusRoom,
@@ -75,7 +72,11 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { extractPageSlugId, platformModifierKey } from "@/lib";
 import { FIVE_MINUTES } from "@/lib/constants.ts";
 import { PageEditMode } from "@/features/user/types/user.types.ts";
-import { jwtDecode } from "jwt-decode";
+import {
+  clearProtectedState,
+  protectedDocumentCacheName,
+  registerProtectedCleanup,
+} from "@/features/auth/protected-session";
 import { searchSpotlight } from "@/features/search/constants.ts";
 import { useEditorScroll } from "./hooks/use-editor-scroll";
 import { EditorLinkMenu } from "@/features/editor/components/link/link-menu";
@@ -102,7 +103,7 @@ export default function PageEditor({
   canComment,
 }: PageEditorProps) {
   const { t } = useTranslation();
-  const { data: collabQuery, refetch: refetchCollabToken } = useCollabToken();
+  const { data: collabQuery } = useCollabToken();
   const { pageSlug } = useParams();
   const slugId = extractPageSlugId(pageSlug);
   const [socket] = useState(getCollabSocket);
@@ -134,12 +135,7 @@ export default function PageEditor({
   };
 
   const handleAuthenticationFailed = () => {
-    const payload = jwtDecode(collabQuery?.token);
-    const now = Date.now().valueOf() / 1000;
-    const isTokenExpired = now >= payload.exp;
-    if (isTokenExpired) {
-      refetchCollabToken();
-    }
+    void clearProtectedState().catch(() => {});
   };
 
   return (
@@ -210,15 +206,39 @@ function CollabPageEditor({
   const { handleScrollTo } = useEditorScroll({ canScroll });
 
   useEffect(() => {
-    const local = new IndexeddbPersistence(
-      provider.configuration.name,
-      provider.document,
-    );
+    if (!currentUser?.user || !currentUser.workspace) return;
+    let cacheName: string;
+    try {
+      cacheName = protectedDocumentCacheName(
+        currentUser.workspace.id,
+        currentUser.user.id,
+        pageId,
+      );
+    } catch {
+      void clearProtectedState().catch(() => {});
+      return;
+    }
+    const local = new IndexeddbPersistence(cacheName, provider.document);
     local.on("synced", () => setIsLocalSynced(true));
+    const unregister = registerProtectedCleanup(async () => {
+      provider.destroy();
+      if (!editorRef.current?.isDestroyed) editorRef.current?.destroy();
+      setEditor(null);
+      // clearData 未返回内部 deleteDB Promise；统一清理器关闭连接后等待实际删除。
+      await local.destroy();
+      provider.document.destroy();
+    });
     return () => {
+      unregister();
       local.destroy();
     };
-  }, [provider]);
+  }, [
+    provider,
+    currentUser?.user.id,
+    currentUser?.workspace.id,
+    pageId,
+    setEditor,
+  ]);
 
   useHocuspocusEvent("synced", ({ state }) => setIsRemoteSynced(state));
   useHocuspocusEvent("status", ({ status }) => setYjsConnectionStatus(status));
@@ -342,7 +362,6 @@ function CollabPageEditor({
       },
       onCreate({ editor }) {
         if (editor) {
-          // @ts-ignore
           setEditor(editor);
           // @ts-ignore
           editor.storage.pageId = pageId;
@@ -362,7 +381,6 @@ function CollabPageEditor({
 
   useLayoutEffect(() => {
     if (editor && !editor.isDestroyed) {
-      // @ts-ignore
       setEditor(editor);
       // @ts-ignore
       editor.storage.pageId = pageId;

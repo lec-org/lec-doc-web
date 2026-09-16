@@ -1,7 +1,7 @@
 import "@mantine/core/styles.css";
 import "@mantine/spotlight/styles.css";
 import "@mantine/notifications/styles.css";
-import '@mantine/dates/styles.css';
+import "@mantine/dates/styles.css";
 import "@/styles/a11y-overrides.css";
 
 import ReactDOM from "react-dom/client";
@@ -16,21 +16,25 @@ import { HelmetProvider } from "react-helmet-async";
 import "./i18n";
 
 import { queryClient } from "@/lib/query-client";
+import { ProtectedSessionBoundary } from "@/features/auth/protected-session-boundary";
 
 const container = document.getElementById("root") as HTMLElement;
-const root = (container as any).__reactRoot ??= ReactDOM.createRoot(container);
+const root = ((container as any).__reactRoot ??=
+  ReactDOM.createRoot(container));
 
 root.render(
   <BrowserRouter>
     <MantineProvider theme={theme} cssVariablesResolver={mantineCssResolver}>
-      <ModalsProvider>
-        <QueryClientProvider client={queryClient}>
-          <Notifications position="bottom-center" limit={3} zIndex={10000} />
-          <HelmetProvider>
-            <App />
-          </HelmetProvider>
-        </QueryClientProvider>
-      </ModalsProvider>
+      <ProtectedSessionBoundary>
+        <ModalsProvider>
+          <QueryClientProvider client={queryClient}>
+            <Notifications position="bottom-center" limit={3} zIndex={10000} />
+            <HelmetProvider>
+              <App />
+            </HelmetProvider>
+          </QueryClientProvider>
+        </ModalsProvider>
+      </ProtectedSessionBoundary>
     </MantineProvider>
   </BrowserRouter>,
 );

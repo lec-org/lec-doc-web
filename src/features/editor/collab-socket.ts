@@ -3,12 +3,21 @@ import {
   WebSocketStatus,
 } from "@hocuspocus/provider";
 import { getCollaborationUrl } from "@/lib/config.ts";
+import { registerProtectedCleanup } from "@/features/auth/protected-session";
 
 const RELEASE_GRACE_MS = 5000;
 
 let socket: HocuspocusProviderWebsocket | null = null;
 let editorCount = 0;
 let releaseTimer: ReturnType<typeof setTimeout> | null = null;
+
+registerProtectedCleanup(() => {
+  if (releaseTimer) clearTimeout(releaseTimer);
+  releaseTimer = null;
+  editorCount = 0;
+  socket?.destroy();
+  socket = null;
+});
 
 export function getCollabSocket(): HocuspocusProviderWebsocket {
   if (!socket) {
@@ -34,7 +43,7 @@ export function acquireCollabSocket(): void {
 }
 
 export function releaseCollabSocket(): void {
-  editorCount--;
+  editorCount = Math.max(0, editorCount - 1);
   if (editorCount > 0) return;
   if (releaseTimer) clearTimeout(releaseTimer);
   releaseTimer = setTimeout(() => {

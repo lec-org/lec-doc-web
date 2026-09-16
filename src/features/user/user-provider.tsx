@@ -11,6 +11,7 @@ import { useTreeSocket } from "@/features/websocket/use-tree-socket.ts";
 import { useNotificationSocket } from "@/features/notification/hooks/use-notification-socket.ts";
 import { useCollabToken } from "@/features/auth/queries/auth-query.tsx";
 import { Error404 } from "@/components/ui/error-404.tsx";
+import { registerProtectedCleanup } from "@/features/auth/protected-session";
 
 export function UserProvider({ children }: React.PropsWithChildren) {
   const [, setCurrentUser] = useAtom(currentUserAtom);
@@ -26,7 +27,11 @@ export function UserProvider({ children }: React.PropsWithChildren) {
       withCredentials: true,
     });
     setSocket(newSocket);
+    const unregister = registerProtectedCleanup(() => {
+      newSocket.disconnect();
+    });
     return () => {
+      unregister();
       newSocket.disconnect();
       setSocket(null);
     };
@@ -39,12 +44,15 @@ export function UserProvider({ children }: React.PropsWithChildren) {
   useEffect(() => {
     if (data?.user && data.workspace) {
       setCurrentUser(data);
-      i18n.changeLanguage(data.user.locale === "en" ? "en-US" : data.user.locale);
+      i18n.changeLanguage(
+        data.user.locale === "en" ? "en-US" : data.user.locale,
+      );
     }
   }, [data, i18n, setCurrentUser]);
 
   useEffect(() => {
-    document.documentElement.lang = i18n.resolvedLanguage || i18n.language || "en-US";
+    document.documentElement.lang =
+      i18n.resolvedLanguage || i18n.language || "en-US";
   }, [i18n.language, i18n.resolvedLanguage]);
 
   if (isLoading) return null;
