@@ -10,6 +10,9 @@ import React from "react";
 import { EmptyState } from "@/components/ui/empty-state.tsx";
 import { IconAlertTriangle, IconFileOff } from "@tabler/icons-react";
 import { Button } from "@mantine/core";
+import PageControlModal, {
+  type PageControlAction,
+} from "@/features/page/components/page-control-modal";
 import { ErrorBoundary } from "react-error-boundary";
 import { getPageTitle } from "@/features/page/page.utils";
 import { DocumentTitle } from "@/components/ui/document-title.tsx";
@@ -30,7 +33,12 @@ export default function Page() {
           icon={IconAlertTriangle}
           title={t("Failed to load page. An error occurred.")}
           action={
-            <Button variant="default" size="sm" mt="xs" onClick={resetErrorBoundary}>
+            <Button
+              variant="default"
+              size="sm"
+              mt="xs"
+              onClick={resetErrorBoundary}
+            >
               {t("Try again")}
             </Button>
           }
@@ -44,6 +52,8 @@ export default function Page() {
 
 function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
   const { t } = useTranslation();
+  const [controlAction, setControlAction] =
+    React.useState<PageControlAction | null>(null);
   const {
     data: page,
     isLoading,
@@ -67,18 +77,39 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
             "This page may have been deleted, moved, or you may not have access.",
           )}
           action={
-            <Button component={Link} to="/home" variant="default" size="sm" mt="xs">
-              {t("Go to homepage")}
-            </Button>
+            error?.["status"] === 403 && extractPageSlugId(pageSlug) ? (
+              <>
+                <Button
+                  variant="default"
+                  size="sm"
+                  mt="xs"
+                  onClick={() => setControlAction("request-access")}
+                >
+                  {t("Request page access")}
+                </Button>
+                <PageControlModal
+                  action={controlAction}
+                  pageId={extractPageSlugId(pageSlug)}
+                  onClose={() => setControlAction(null)}
+                />
+              </>
+            ) : (
+              <Button
+                component={Link}
+                to="/home"
+                variant="default"
+                size="sm"
+                mt="xs"
+              >
+                {t("Go to homepage")}
+              </Button>
+            )
           }
         />
       );
     }
     return (
-      <EmptyState
-        icon={IconFileOff}
-        title={t("Error fetching page data.")}
-      />
+      <EmptyState icon={IconFileOff} title={t("Error fetching page data.")} />
     );
   }
 

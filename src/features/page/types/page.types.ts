@@ -96,6 +96,36 @@ export interface IExportPageParams {
   includeAttachments?: boolean;
 }
 
+export interface IGrantPageViewInput {
+  pageId: string;
+  subjectIssuer: string;
+  subject: string;
+  operationId: string;
+  expectedVersion: number;
+  expiresAt?: string;
+}
+
+export interface IGrantPageViewResult {
+  operationId: string;
+  status: "DONE";
+}
+
+export interface IPageControlInput {
+  pageId: string;
+  operationId: string;
+  expectedVersion: number;
+}
+
+export interface ILecResource {
+  resource_version: number;
+}
+
+export interface ILecAccessRequest {
+  id: string;
+  status: "PENDING" | "APPROVED" | "REJECTED" | "REVOKED";
+  reason: string;
+}
+
 export enum ExportFormat {
   HTML = "html",
   Markdown = "markdown",

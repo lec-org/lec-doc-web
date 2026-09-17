@@ -1,4 +1,11 @@
-import { ActionIcon, Group, Menu, Text, ThemeIcon, Tooltip } from "@mantine/core";
+import {
+  ActionIcon,
+  Group,
+  Menu,
+  Text,
+  ThemeIcon,
+  Tooltip,
+} from "@mantine/core";
 import {
   IconArrowRight,
   IconArrowsHorizontal,
@@ -13,6 +20,7 @@ import {
   IconMessage,
   IconPaperclip,
   IconPrinter,
+  IconShieldPlus,
   IconStar,
   IconStarFilled,
   IconTrash,
@@ -56,6 +64,10 @@ import {
   useWatchPageMutation,
   useUnwatchPageMutation,
 } from "@/features/page/queries/watcher-query";
+import PageViewGrantModal from "@/features/page/components/page-view-grant-modal";
+import PageControlModal, {
+  PageControlAction,
+} from "@/features/page/components/page-control-modal";
 
 interface PageHeaderMenuProps {
   readOnly?: boolean;
@@ -155,6 +167,11 @@ function PageActionMenu({ readOnly }: PageActionMenuProps) {
     attachmentsOpened,
     { open: openAttachmentsModal, close: closeAttachmentsModal },
   ] = useDisclosure(false);
+  const [grantOpened, { open: openGrantModal, close: closeGrantModal }] =
+    useDisclosure(false);
+  const [controlAction, setControlAction] = useState<PageControlAction | null>(
+    null,
+  );
   const [pageEditor] = useAtom(pageEditorAtom);
   const pageUpdatedAt = useTimeAgo(page?.updatedAt);
   const favoriteIds = useFavoriteIds("page", page?.spaceId);
@@ -246,7 +263,10 @@ function PageActionMenu({ readOnly }: PageActionMenuProps) {
           <Menu.Item
             leftSection={
               isFavorited ? (
-                <IconStarFilled size={16} color="var(--mantine-color-yellow-5)" />
+                <IconStarFilled
+                  size={16}
+                  color="var(--mantine-color-yellow-5)"
+                />
               ) : (
                 <IconStar size={16} />
               )
@@ -301,6 +321,42 @@ function PageActionMenu({ readOnly }: PageActionMenuProps) {
           )}
 
           <Menu.Divider />
+
+          <Menu.Sub position="left-start">
+            <Menu.Sub.Target>
+              <Menu.Sub.Item leftSection={<IconShieldPlus size={16} />}>
+                {t("Page access controls")}
+              </Menu.Sub.Item>
+            </Menu.Sub.Target>
+            <Menu.Sub.Dropdown>
+              <Menu.Item onClick={() => setControlAction("request-access")}>
+                {t("Request page access")}
+              </Menu.Item>
+              {!readOnly && (
+                <>
+                  <Menu.Divider />
+                  <Menu.Item onClick={() => setControlAction("classify")}>
+                    {t("Set page classification")}
+                  </Menu.Item>
+                  <Menu.Item onClick={() => setControlAction("transfer-owner")}>
+                    {t("Transfer page owner")}
+                  </Menu.Item>
+                  <Menu.Item onClick={openGrantModal}>
+                    {t("Grant view access")}
+                  </Menu.Item>
+                  <Menu.Item onClick={() => setControlAction("revoke-grant")}>
+                    {t("Revoke page grant")}
+                  </Menu.Item>
+                  <Menu.Item onClick={() => setControlAction("review-access")}>
+                    {t("Review access request")}
+                  </Menu.Item>
+                  <Menu.Item onClick={() => setControlAction("revoke-access")}>
+                    {t("Revoke page access")}
+                  </Menu.Item>
+                </>
+              )}
+            </Menu.Sub.Dropdown>
+          </Menu.Sub>
 
           {!readOnly && (
             <Menu.Item
@@ -394,6 +450,18 @@ function PageActionMenu({ readOnly }: PageActionMenuProps) {
         pageId={page.id}
         open={attachmentsOpened}
         onClose={closeAttachmentsModal}
+      />
+
+      <PageViewGrantModal
+        pageId={page.id}
+        open={grantOpened}
+        onClose={closeGrantModal}
+      />
+
+      <PageControlModal
+        pageId={page.id}
+        action={controlAction}
+        onClose={() => setControlAction(null)}
       />
     </>
   );

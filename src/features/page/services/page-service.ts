@@ -2,18 +2,23 @@ import api from "@/lib/api-client";
 import {
   ICopyPageToSpace,
   IExportPageParams,
+  IGrantPageViewInput,
+  IGrantPageViewResult,
+  ILecAccessRequest,
+  ILecResource,
   IMovePage,
+  IPageControlInput,
   IMovePageToSpace,
   IPage,
   IPageInput,
   SidebarPagesParams,
-} from '@/features/page/types/page.types';
+} from "@/features/page/types/page.types";
 import { QueryParams } from "@/lib/types";
 import { IPagination } from "@/lib/types.ts";
 import { saveAs } from "file-saver";
 import { InfiniteData } from "@tanstack/react-query";
-import { IFileTask } from '@/features/file-task/types/file-task.types.ts';
-import { IAttachment } from '@/features/attachments/types/attachment.types.ts';
+import { IFileTask } from "@/features/file-task/types/file-task.types.ts";
+import { IAttachment } from "@/features/attachments/types/attachment.types.ts";
 
 export async function createPage(data: Partial<IPage>): Promise<IPage> {
   const req = await api.post<IPage>("/pages/create", data);
@@ -27,12 +32,54 @@ export async function getPageById(
   return req.data;
 }
 
+export async function grantPageView(
+  data: IGrantPageViewInput,
+): Promise<IGrantPageViewResult> {
+  const req = await api.post<IGrantPageViewResult>("/pages/grant-view", data);
+  return req.data;
+}
+
+async function pageControl<T>(path: string, data: object): Promise<T> {
+  const req = await api.post<T>(`/pages/${path}`, data);
+  return req.data;
+}
+
+export const classifyPage = (
+  data: IPageControlInput & { classification: number },
+) => pageControl<ILecResource>("classify", data);
+
+export const transferPageOwner = (
+  data: IPageControlInput & { ownerUserId: string },
+) => pageControl<ILecResource>("transfer-owner", data);
+
+export const revokePageGrant = (
+  data: IPageControlInput & { grantId: string },
+) => pageControl<ILecResource>("revoke-grant", data);
+
+export const requestPageAccess = (data: { pageId: string; reason: string }) =>
+  pageControl<ILecAccessRequest>("request-access", data);
+
+export const reviewPageAccess = (
+  data: IPageControlInput & {
+    accessRequestId: string;
+    decision: "APPROVE" | "REJECT";
+    expiresAt?: string;
+  },
+) => pageControl<ILecResource>("review-access", data);
+
+export const revokePageAccess = (
+  data: IPageControlInput & { accessRequestId: string },
+) => pageControl<ILecResource>("revoke-access", data);
+
 export async function updatePage(data: Partial<IPageInput>): Promise<IPage> {
   const req = await api.post<IPage>("/pages/update", data);
   return req.data;
 }
 
-export async function deletePage(pageId: string, permanentlyDelete = false): Promise<void> {
+export async function deletePage(
+  pageId: string,
+  permanentlyDelete = false,
+): Promise<void> {
   await api.post("/pages/delete", { pageId, permanentlyDelete });
 }
 
@@ -77,7 +124,11 @@ export async function getAllSidebarPages(
   const pageParams: (string | undefined)[] = [];
 
   do {
-    const req = await api.post("/pages/sidebar-pages", { ...params, cursor, limit: 100 });
+    const req = await api.post("/pages/sidebar-pages", {
+      ...params,
+      cursor,
+      limit: 100,
+    });
 
     const data: IPagination<IPage> = req.data;
     pages.push(data);

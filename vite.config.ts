@@ -27,6 +27,9 @@ export default defineConfig(({ mode }) => {
         BETA_PUBLIC_SPACES,
       },
       APP_VERSION: JSON.stringify(process.env.npm_package_version),
+      APP_SOURCE_REF: JSON.stringify(
+        process.env.LEC_DOC_WEB_SOURCE_REF || "main",
+      ),
     },
     plugins: [react()],
     build: {

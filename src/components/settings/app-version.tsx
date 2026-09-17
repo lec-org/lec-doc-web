@@ -7,7 +7,7 @@ export default function AppVersion() {
       <Text size="sm" c="dimmed">
         {APP_VERSION ? `Lec Doc v${APP_VERSION}` : "Lec Doc"}{" · "}
         <a
-          href="https://github.com/lec-org/lec-doc-web/tree/v0.96.0-lec.1"
+          href={`https://github.com/lec-org/lec-doc-web/tree/${encodeURIComponent(APP_SOURCE_REF)}`}
           target="_blank"
           rel="noreferrer"
         >
