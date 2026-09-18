@@ -144,7 +144,7 @@ export default function PageViewGrantModal({
                 <TextInput
                   withAsterisk
                   label={t("OIDC issuer")}
-                  placeholder="https://sso.example/realms/lec"
+                  placeholder="https://sso.example/oidc"
                   autoComplete="url"
                   disabled={grant.isPending}
                   errorProps={{ role: "alert" }}

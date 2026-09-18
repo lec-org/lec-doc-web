@@ -57,7 +57,7 @@ it("submits the server grant contract and omits an empty expiration", async () =
   );
 
   fireEvent.change(screen.getByLabelText(/^OIDC issuer/), {
-    target: { value: "https://sso.example.test/realms/lec" },
+    target: { value: "https://sso.example.test/oidc" },
   });
   fireEvent.change(screen.getByLabelText(/^OIDC subject/), {
     target: { value: "recipient-subject" },
@@ -70,7 +70,7 @@ it("submits the server grant contract and omits an empty expiration", async () =
   await waitFor(() =>
     expect(mutateAsync).toHaveBeenCalledWith({
       pageId: "10000000-0000-4000-8000-000000000001",
-      subjectIssuer: "https://sso.example.test/realms/lec",
+      subjectIssuer: "https://sso.example.test/oidc",
       subject: "recipient-subject",
       expectedVersion: 7,
       operationId: "60000000-0000-4000-8000-000000000001",
