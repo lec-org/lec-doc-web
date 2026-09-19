@@ -1,13 +1,12 @@
-import React from 'react';
-import { Divider, Title } from '@mantine/core';
+import { Text } from "@mantine/core";
 
-export default function SettingsTitle({ title }: { title: string }) {
+export default function SettingsTitle({ title, description }: { title: string; description?: string }) {
   return (
-    <>
-      <Title order={1} size="h3">
-        {title}
-      </Title>
-      <Divider my="md" />
-    </>
+    <header className="lec-page-header" style={{ marginTop: 40 }}>
+      <div>
+        <h1 className="lec-page-title">{title}</h1>
+        {description && <Text className="lec-page-description">{description}</Text>}
+      </div>
+    </header>
   );
 }

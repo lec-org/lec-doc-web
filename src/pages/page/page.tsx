@@ -60,7 +60,9 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
     isError,
     error,
   } = usePageQuery({ pageId: extractPageSlugId(pageSlug) });
-  const { data: space } = useGetSpaceBySlugQuery(page?.space?.slug);
+  const effectiveSpaceSlug = page?.space?.slug;
+  const { data: space, isLoading: isSpaceLoading } =
+    useGetSpaceBySlugQuery(effectiveSpaceSlug);
   const canEdit = !page?.deletedAt && (page?.permissions?.canEdit ?? false);
   const canComment =
     canEdit || space?.settings?.comments?.allowViewerComments === true;
@@ -113,7 +115,7 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
     );
   }
 
-  if (!space) return null;
+  if (effectiveSpaceSlug && isSpaceLoading) return null;
 
   if (page.isBase) {
     return (
@@ -138,7 +140,7 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
         title={page.title}
         content={page.content}
         slugId={page.slugId}
-        spaceSlug={page.space?.slug}
+        spaceSlug={effectiveSpaceSlug}
         editable={canEdit}
         creator={page.creator}
         contributors={page.contributors}

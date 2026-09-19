@@ -34,7 +34,7 @@ export default function PageHeader({ readOnly }: Props) {
     <div className={classes.header} data-page-header="true">
       <Group justify="space-between" h="100%" px="md" wrap="nowrap" className={classes.group}>
         <Group gap="xs" wrap="nowrap" style={{ minWidth: 0 }}>
-          <Breadcrumb />
+          {spaceSlug && <Breadcrumb />}
 
           {showPublicBadge && (
             <Tooltip label={t("Open public page")} openDelay={250} withArrow>

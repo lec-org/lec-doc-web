@@ -33,7 +33,7 @@ export interface TitleEditorProps {
   pageId: string;
   slugId: string;
   title: string;
-  spaceSlug: string;
+  spaceSlug?: string;
   editable: boolean;
   isBase?: boolean;
 }

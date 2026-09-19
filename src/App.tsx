@@ -23,7 +23,6 @@ const AccountPreferences = lazy(
   () => import("@/pages/settings/account/account-preferences.tsx"),
 );
 const SpaceHome = lazy(() => import("@/pages/space/space-home.tsx"));
-const PageRedirect = lazy(() => import("@/pages/page/page-redirect.tsx"));
 const SharedPage = lazy(() => import("@/pages/share/shared-page.tsx"));
 const Shares = lazy(() => import("@/pages/settings/shares/shares.tsx"));
 const ShareLayout = lazy(
@@ -42,6 +41,9 @@ const PublicSpaceDirectoryPage = lazy(
 const SpacesPage = lazy(() => import("@/pages/spaces/spaces.tsx"));
 const SpaceTrash = lazy(() => import("@/pages/space/space-trash.tsx"));
 const FavoritesPage = lazy(() => import("@/pages/favorites/favorites-page"));
+const RecentPage = lazy(() => import("@/pages/recent/recent-page"));
+const SharedPageList = lazy(() => import("@/pages/shared/shared-page-list"));
+const SearchPage = lazy(() => import("@/pages/search/search-page"));
 const LabelPage = lazy(() => import("@/pages/label/label-page"));
 
 export default function App() {
@@ -89,18 +91,22 @@ export default function App() {
         </Route>
 
         <Route path="/share/:shareId" element={<ShareRedirect />} />
-        <Route path="/p/:pageSlug" element={<PageRedirect />} />
 
         <Route element={<Layout />}>
+          <Route path="/p/:pageSlug" element={<Page />} />
           <Route path="/home" element={<Home />} />
           <Route path="/spaces" element={<SpacesPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/recent" element={<RecentPage />} />
+          <Route path="/shared" element={<SharedPageList />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/labels/:labelName" element={<LabelPage />} />
           <Route path="/s/:spaceSlug" element={<SpaceHome />} />
           <Route path="/s/:spaceSlug/trash" element={<SpaceTrash />} />
           <Route path="/s/:spaceSlug/p/:pageSlug" element={<Page />} />
 
           <Route path="/settings">
+            <Route index element={<Navigate to="account/profile" replace />} />
             <Route path="account/profile" element={<AccountSettings />} />
             <Route
               path="account/preferences"

@@ -62,15 +62,17 @@ export default function SpaceSettingsModal({
           </Modal.Header>
           <Modal.Body>
             <div style={{ height: rem(600) }}>
-              <Tabs color="dark" defaultValue="members">
+              <Tabs color="dark" defaultValue="general">
                 <Tabs.List>
                   <Tabs.Tab fw={500} value="general">
                     {t("Settings")}
                   </Tabs.Tab>
-                  <Tabs.Tab fw={500} value="members">
-                    {t("Members")}
-                  </Tabs.Tab>
-                  {canManageSettings && allowPublicSpaces && (
+                  {!space?.isPersonal && (
+                    <Tabs.Tab fw={500} value="members">
+                      {t("Members")}
+                    </Tabs.Tab>
+                  )}
+                  {!space?.isPersonal && canManageSettings && allowPublicSpaces && (
                     <Tabs.Tab fw={500} value="publish">
                       {t("Publish")}
                     </Tabs.Tab>
@@ -82,31 +84,36 @@ export default function SpaceSettingsModal({
                     <div style={{ paddingBottom: "100px" }}>
                       <SpaceDetails
                         spaceId={space?.id}
-                        readOnly={spaceAbility.cannot(
-                          SpaceCaslAction.Manage,
-                          SpaceCaslSubject.Settings,
-                        )}
+                        readOnly={
+                          space?.isDefaultPersonal ||
+                          spaceAbility.cannot(
+                            SpaceCaslAction.Manage,
+                            SpaceCaslSubject.Settings,
+                          )
+                        }
                       />
                     </div>
                   </ScrollArea>
                 </Tabs.Panel>
 
-                <Tabs.Panel value="members">
-                  <Group my="md" justify="flex-end">
-                    {spaceAbility.can(
-                      SpaceCaslAction.Manage,
-                      SpaceCaslSubject.Member,
-                    ) && <AddSpaceMembersModal spaceId={space?.id} />}
-                  </Group>
+                {!space?.isPersonal && (
+                  <Tabs.Panel value="members">
+                    <Group my="md" justify="flex-end">
+                      {spaceAbility.can(
+                        SpaceCaslAction.Manage,
+                        SpaceCaslSubject.Member,
+                      ) && <AddSpaceMembersModal spaceId={space?.id} />}
+                    </Group>
 
-                  <SpaceMembersList
-                    spaceId={space?.id}
-                    readOnly={spaceAbility.cannot(
-                      SpaceCaslAction.Manage,
-                      SpaceCaslSubject.Member,
-                    )}
-                  />
-                </Tabs.Panel>
+                    <SpaceMembersList
+                      spaceId={space?.id}
+                      readOnly={spaceAbility.cannot(
+                        SpaceCaslAction.Manage,
+                        SpaceCaslSubject.Member,
+                      )}
+                    />
+                  </Tabs.Panel>
+                )}
 
                 <Tabs.Panel value="publish">
                   <ScrollArea h={580} scrollbarSize={5} pr={8}>

@@ -1,141 +1,40 @@
-import {
-  Text,
-  Group,
-  UnstyledButton,
-  Badge,
-  Table,
-  Container,
-  Title,
-  ThemeIcon,
-  Button,
-} from "@mantine/core";
+import { Badge, Button, Group, Text } from "@mantine/core";
+import { IconStar } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { DocumentTitle } from "@/components/ui/document-title";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageListIcon } from "@/components/common/page-list-icon";
+import { useFavoritesQuery } from "@/features/favorite/queries/favorite-query";
 import { buildPageUrl, getPageTitle } from "@/features/page/page.utils";
 import { formattedDate } from "@/lib/time";
-import { useFavoritesQuery } from "@/features/favorite/queries/favorite-query";
-import { IconFileDescription, IconStar } from "@tabler/icons-react";
-import { EmptyState } from "@/components/ui/empty-state";
-import { getSpaceUrl } from "@/lib/config";
-import { useTranslation } from "react-i18next";
-import { getInitialsColor } from "@/lib/get-initials-color";
-import PageListSkeleton from "@/components/ui/page-list-skeleton";
-import rowClasses from "@/components/ui/clickable-table-row.module.css";
 
 export default function FavoritesPage() {
   const { t } = useTranslation();
-  const { data, isLoading, isError, hasNextPage, fetchNextPage, isFetchingNextPage } = useFavoritesQuery("page");
-  const favorites = data?.pages.flatMap((p) => p.items) ?? [];
-
-  if (isLoading) {
-    return (
-      <Container size={800} py="xl">
-        <Title order={3} mb="lg">
-          {t("Favorites")}
-        </Title>
-        <PageListSkeleton />
-      </Container>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Container size={800} py="xl">
-        <Title order={3} mb="lg">
-          {t("Favorites")}
-        </Title>
-        <Text>{t("Failed to fetch favorite pages")}</Text>
-      </Container>
-    );
-  }
+  const query = useFavoritesQuery("page");
+  const favorites = query.data?.pages.flatMap((page) => page.items) ?? [];
+  const visible = favorites.filter((favorite) => favorite.page);
 
   return (
-    <Container size={800} py="xl">
-      <Title order={1} size="h3" mb="lg">
-        {t("Favorites")}
-      </Title>
-      {favorites.length > 0 ? (
+    <div className="lec-page lec-page--narrow">
+      <DocumentTitle title={t("Favorites")} />
+      <header className="lec-page-header"><div><h1 className="lec-page-title">{t("Favorites")}</h1><p className="lec-page-description">{t("Your pinned documents, always one click away.")}</p></div></header>
+      {visible.length ? (
         <>
-          <Table.ScrollContainer minWidth={500}>
-            <Table highlightOnHover verticalSpacing="sm">
-              <Table.Tbody>
-                {favorites.map((fav) =>
-                  fav.page ? (
-                    <Table.Tr key={fav.id} className={rowClasses.row}>
-                      <Table.Td>
-                        <UnstyledButton
-                          className={rowClasses.link}
-                          component={Link}
-                          to={buildPageUrl(
-                            fav.space?.slug,
-                            fav.page.slugId,
-                            fav.page.title,
-                          )}
-                        >
-                          <Group wrap="nowrap">
-                            {fav.page.icon || (
-                              <ThemeIcon
-                                variant="transparent"
-                                color="gray"
-                                size={18}
-                              >
-                                <IconFileDescription size={18} />
-                              </ThemeIcon>
-                            )}
-                            <Text fw={500} size="md" lineClamp={1}>
-                              {getPageTitle(fav.page.title, undefined, t)}
-                            </Text>
-                          </Group>
-                        </UnstyledButton>
-                      </Table.Td>
-                      <Table.Td>
-                        {fav.space && (
-                          <Badge
-                            color={getInitialsColor(fav.space.name)}
-                            variant="light"
-                            component={Link}
-                            to={getSpaceUrl(fav.space.slug)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            {fav.space.name}
-                          </Badge>
-                        )}
-                      </Table.Td>
-                      <Table.Td>
-                        <Text
-                          c="dimmed"
-                          style={{ whiteSpace: "nowrap" }}
-                          size="xs"
-                          fw={500}
-                        >
-                          {formattedDate(new Date(fav.createdAt))}
-                        </Text>
-                      </Table.Td>
-                    </Table.Tr>
-                  ) : null,
-                )}
-              </Table.Tbody>
-            </Table>
-          </Table.ScrollContainer>
-          {hasNextPage && (
-            <Button
-              variant="subtle"
-              fullWidth
-              mt="sm"
-              mb="xl"
-              onClick={() => fetchNextPage()}
-              loading={isFetchingNextPage}
-            >
-              {t("Load more")}
-            </Button>
-          )}
+          <div className="lec-card">
+            {visible.map((favorite) => (
+              <Link key={favorite.id} className="lec-list-row" to={buildPageUrl(favorite.space?.slug, favorite.page!.slugId, favorite.page!.title)}>
+                <Group gap={10} wrap="nowrap"><PageListIcon icon={favorite.page!.icon} /><Text size="sm" fw={550} truncate>{getPageTitle(favorite.page!.title, false, t)}</Text></Group>
+                <Badge size="sm" color="gray" variant="light">{favorite.space?.name}</Badge>
+                <Text size="xs" c="dimmed" ta="right">{formattedDate(new Date(favorite.createdAt))}</Text>
+              </Link>
+            ))}
+          </div>
+          {query.hasNextPage && <Button variant="subtle" fullWidth mt="sm" loading={query.isFetchingNextPage} onClick={() => query.fetchNextPage()}>{t("Load more")}</Button>}
         </>
-      ) : (
-        <EmptyState
-          icon={IconStar}
-          title={t("No favorite pages")}
-          description={t("Pages you favorite will show up here.")}
-        />
+      ) : query.isLoading ? null : (
+        <EmptyState icon={IconStar} title={t("No favorite pages")} description={t("Pages you favorite will show up here.")} />
       )}
-    </Container>
+    </div>
   );
 }

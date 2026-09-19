@@ -5,6 +5,7 @@ import { ExportFormat } from "@/features/page/types/page.types.ts";
 import { notifications } from "@mantine/notifications";
 import { exportSpace } from "@/features/space/services/space-service";
 import { useTranslation } from "react-i18next";
+import { getApiErrorMessage } from "@/lib/api-error.ts";
 
 interface ExportModalProps {
   id: string;
@@ -31,7 +32,7 @@ export default function ExportModal({ id, type, open, onClose }: ExportModalProp
       notifications.show({ message: t("Export successful") });
       onClose();
     } catch (err) {
-      notifications.show({ message: "Export failed:" + err.response?.data.message, color: "red" });
+      notifications.show({ message: getApiErrorMessage(err, t("Export failed")), color: "red" });
     } finally {
       setIsExporting(false);
     }

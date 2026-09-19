@@ -24,7 +24,7 @@ const formSchema = z.object({
 });
 type FormValues = z.infer<typeof formSchema>;
 
-export function CreateSpaceForm() {
+export function CreateSpaceForm({ kind = "personal" }: { kind?: "personal" | "team" }) {
   const { t } = useTranslation();
   const createSpaceMutation = useCreateSpaceMutation();
   const navigate = useNavigate();
@@ -63,6 +63,7 @@ export function CreateSpaceForm() {
       name: data.name,
       slug: data.slug,
       description: data.description,
+      kind,
     };
 
     const createdSpace = await createSpaceMutation.mutateAsync(spaceData);

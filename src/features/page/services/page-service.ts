@@ -16,6 +16,7 @@ import {
 import { QueryParams } from "@/lib/types";
 import { IPagination } from "@/lib/types.ts";
 import { saveAs } from "file-saver";
+import { downloadFilename } from "@/lib/download.ts";
 import { InfiniteData } from "@tanstack/react-query";
 import { IFileTask } from "@/features/file-task/types/file-task.types.ts";
 import { IAttachment } from "@/features/attachments/types/attachment.types.ts";
@@ -169,18 +170,10 @@ export async function exportPage(data: IExportPageParams): Promise<void> {
     responseType: "blob",
   });
 
-  const fileName = req?.headers["content-disposition"]
-    .split("filename=")[1]
-    .replace(/"/g, "");
-
-  let decodedFileName = fileName;
-  try {
-    decodedFileName = decodeURIComponent(fileName);
-  } catch (err) {
-    // fallback to raw filename
-  }
-
-  saveAs(req.data, decodedFileName);
+  saveAs(
+    req.data,
+    downloadFilename(req?.headers["content-disposition"], `page-export-${Date.now()}.zip`),
+  );
 }
 
 export async function importPage(file: File, spaceId: string) {

@@ -58,14 +58,13 @@ export function NotificationItem({
     }
   };
 
-  const pageUrl =
-    notification.page && notification.space
-      ? buildPageUrl(
-          notification.space.slug,
-          notification.page.slugId,
-          notification.page.title,
-        )
-      : undefined;
+  const pageUrl = notification.page
+    ? buildPageUrl(
+        notification.space?.slug,
+        notification.page.slugId,
+        notification.page.title,
+      )
+    : undefined;
 
   const linkUrl = pageUrl;
 

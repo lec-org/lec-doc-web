@@ -12,6 +12,7 @@ import { useNotificationSocket } from "@/features/notification/hooks/use-notific
 import { useCollabToken } from "@/features/auth/queries/auth-query.tsx";
 import { Error404 } from "@/components/ui/error-404.tsx";
 import { registerProtectedCleanup } from "@/features/auth/protected-session";
+import { getSocketUrl } from "@/lib/config";
 
 export function UserProvider({ children }: React.PropsWithChildren) {
   const [, setCurrentUser] = useAtom(currentUserAtom);
@@ -22,7 +23,7 @@ export function UserProvider({ children }: React.PropsWithChildren) {
 
   useEffect(() => {
     if (isLoading || isError) return;
-    const newSocket = io(SOCKET_URL, {
+    const newSocket = io(getSocketUrl() ?? SOCKET_URL, {
       transports: ["websocket"],
       withCredentials: true,
     });

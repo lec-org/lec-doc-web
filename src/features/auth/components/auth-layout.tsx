@@ -1,6 +1,7 @@
 import React from "react";
 import { Group, Text } from "@mantine/core";
 import classes from "./auth.module.css";
+import { getAssetUrl } from "@/lib/config";
 
 type AuthLayoutProps = {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     <>
       <Group justify="center" gap={8} className={classes.logo}>
         <img
-          src="/icons/lec-doc.svg"
+          src={getAssetUrl("/icons/lec-doc.svg")}
           alt="Lec Doc"
           width={22}
           height={22}

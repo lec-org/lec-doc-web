@@ -1,87 +1,83 @@
 import { AppShell, Container } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
+import { useAtom } from "jotai";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import SettingsSidebar from "@/components/settings/settings-sidebar.tsx";
-import { useAtom } from "jotai";
+import SettingsSidebar from "@/components/settings/settings-sidebar";
 import {
   asideStateAtom,
   desktopSidebarAtom,
   mobileSidebarAtom,
   sidebarWidthAtom,
-} from "@/components/layouts/global/hooks/atoms/sidebar-atom.ts";
-import { SpaceSidebar } from "@/features/space/components/sidebar/space-sidebar.tsx";
-import { AppHeader } from "@/components/layouts/global/app-header.tsx";
-import Aside from "@/components/layouts/global/aside.tsx";
+} from "@/components/layouts/global/hooks/atoms/sidebar-atom";
+import { SpaceSidebar } from "@/features/space/components/sidebar/space-sidebar";
+import { AppHeader } from "@/components/layouts/global/app-header";
+import Aside from "@/components/layouts/global/aside";
+import GlobalSidebar from "@/components/layouts/global/global-sidebar";
+import IconSidebar from "@/components/layouts/global/icon-sidebar";
+import { ASIDE_PANEL_ID } from "@/hooks/use-toggle-aside";
+import { MAIN_CONTENT_ID, SkipToMain } from "@/components/ui/skip-to-main";
 import classes from "./app-shell.module.css";
-import { useToggleSidebar } from "@/components/layouts/global/hooks/hooks/use-toggle-sidebar.ts";
-import GlobalSidebar from "@/components/layouts/global/global-sidebar.tsx";
-import { ASIDE_PANEL_ID } from "@/hooks/use-toggle-aside.tsx";
-import { MAIN_CONTENT_ID, SkipToMain } from "@/components/ui/skip-to-main.tsx";
 
 export default function GlobalAppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const [mobileOpened] = useAtom(mobileSidebarAtom);
   const [desktopOpened] = useAtom(desktopSidebarAtom);
   const [{ isAsideOpen, tab: asideTab }] = useAtom(asideStateAtom);
-  const [sidebarWidth, setSidebarWidth] = useAtom(sidebarWidthAtom);
+  const [spaceSidebarWidth, setSpaceSidebarWidth] = useAtom(sidebarWidthAtom);
   const [isResizing, setIsResizing] = useState(false);
-  const sidebarRef = useRef(null);
-
-  const startResizing = React.useCallback((event) => {
-    event.preventDefault();
-    setIsResizing(true);
-  }, []);
-  const stopResizing = React.useCallback(() => setIsResizing(false), []);
-  const resize = React.useCallback(
-    (event) => {
-      if (!isResizing) return;
-      const width = event.clientX - sidebarRef.current.getBoundingClientRect().left;
-      setSidebarWidth(Math.min(600, Math.max(220, width)));
-    },
-    [isResizing, setSidebarWidth],
-  );
-
-  useEffect(() => {
-    window.addEventListener("mousemove", resize);
-    window.addEventListener("mouseup", stopResizing);
-    return () => {
-      window.removeEventListener("mousemove", resize);
-      window.removeEventListener("mouseup", stopResizing);
-    };
-  }, [resize, stopResizing]);
-
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
   const isSettingsRoute = location.pathname.startsWith("/settings");
   const isSpaceRoute = location.pathname.startsWith("/s/");
   const isPageRoute = location.pathname.includes("/p/");
+  const secondaryWidth = isSpaceRoute ? spaceSidebarWidth : 236;
+
+  useEffect(() => {
+    const stop = () => setIsResizing(false);
+    const resize = (event: MouseEvent) => {
+      if (!isResizing || !sidebarRef.current) return;
+      const left = sidebarRef.current.getBoundingClientRect().left;
+      setSpaceSidebarWidth(Math.min(480, Math.max(220, event.clientX - left)));
+    };
+    window.addEventListener("mousemove", resize);
+    window.addEventListener("mouseup", stop);
+    return () => {
+      window.removeEventListener("mousemove", resize);
+      window.removeEventListener("mouseup", stop);
+    };
+  }, [isResizing, setSpaceSidebarWidth]);
 
   return (
     <>
       <SkipToMain />
+      <IconSidebar />
       <AppShell
-        header={{ height: 45 }}
+        className={classes.shell}
+        header={{ height: 48 }}
         navbar={{
-          width: isSpaceRoute ? sidebarWidth : 300,
+          width: secondaryWidth,
           breakpoint: "sm",
           collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
         }}
         aside={
-          isPageRoute && {
-            width: 350,
-            breakpoint: "sm",
-            collapsed: { mobile: !isAsideOpen, desktop: !isAsideOpen },
-          }
+          isPageRoute
+            ? {
+                width: 350,
+                breakpoint: "sm",
+                collapsed: { mobile: !isAsideOpen, desktop: !isAsideOpen },
+              }
+            : undefined
         }
-        padding="md"
+        padding={0}
       >
-        <AppShell.Header px="md" className={classes.header}>
+        <AppShell.Header className={classes.header}>
           <AppHeader />
         </AppShell.Header>
         <AppShell.Navbar
+          ref={sidebarRef}
           className={classes.navbar}
           withBorder={false}
-          ref={sidebarRef}
           aria-label={
             isSpaceRoute
               ? t("Space navigation")
@@ -90,15 +86,24 @@ export default function GlobalAppShell({ children }: { children: React.ReactNode
                 : t("Main navigation")
           }
         >
-          {isSpaceRoute && <div className={classes.resizeHandle} onMouseDown={startResizing} />}
-          {isSpaceRoute && <SpaceSidebar />}
-          {isSettingsRoute && <SettingsSidebar />}
-          {!isSpaceRoute && !isSettingsRoute && <GlobalSidebar />}
+          {isSpaceRoute && (
+            <div className={classes.resizeHandle} onMouseDown={() => setIsResizing(true)} />
+          )}
+          {isSpaceRoute ? (
+            <SpaceSidebar />
+          ) : isSettingsRoute ? (
+            <SettingsSidebar />
+          ) : (
+            <GlobalSidebar />
+          )}
         </AppShell.Navbar>
-        <AppShell.Main id={MAIN_CONTENT_ID} tabIndex={-1}>
-          {isSettingsRoute ? <Container size={900} pb={80}>{children}</Container> : children}
+        <AppShell.Main id={MAIN_CONTENT_ID} tabIndex={-1} className={classes.main}>
+          {isSettingsRoute ? (
+            <Container size={800} px={0} pb={80}>{children}</Container>
+          ) : (
+            children
+          )}
         </AppShell.Main>
-
         {isPageRoute && (
           <AppShell.Aside
             id={ASIDE_PANEL_ID}
@@ -111,9 +116,7 @@ export default function GlobalAppShell({ children }: { children: React.ReactNode
                 ? t("Comments")
                 : asideTab === "toc"
                   ? t("Table of contents")
-                  : asideTab === "details"
-                    ? t("Details")
-                    : undefined
+                  : t("Details")
             }
           >
             <Aside />

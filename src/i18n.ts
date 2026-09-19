@@ -1,6 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import Backend from "i18next-http-backend";
+import { getAssetUrl } from "@/lib/config";
 
 i18n
   // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
@@ -16,6 +17,11 @@ i18n
     debug: false,
     showSupportNotice: false,
     load: 'currentOnly',
+    backend: {
+      loadPath: getAssetUrl(
+        `/locales/{{lng}}/{{ns}}.json?v=${typeof APP_VERSION === "undefined" ? "dev" : APP_VERSION}`,
+      ),
+    },
 
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default

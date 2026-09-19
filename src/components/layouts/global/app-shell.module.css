@@ -1,29 +1,63 @@
-.header, .navbar, .aside {
-  background-color: light-dark(#f6f7f9, var(--mantine-color-dark-8));
+.shell {
+  --app-shell-header-offset: 48px;
+  background: var(--lec-bg);
 }
 
-.navbar, .aside {
-  @media (max-width: $mantine-breakpoint-sm) {
-    width: 350px;
-  }
+.header {
+  left: 56px;
+  background: var(--lec-panel);
+  border-bottom: 1px solid var(--lec-border);
+}
+
+.navbar {
+  left: 56px;
+  top: 48px;
+  height: calc(100dvh - 48px);
+  background: var(--lec-panel);
+  border-right: 1px solid var(--lec-border);
+}
+
+.main {
+  min-height: 100dvh;
+  margin-left: 56px;
+  background: var(--lec-panel);
 }
 
 .aside {
-  @media (max-width: $mantine-breakpoint-sm) {
-    margin-top: 45px;
-  }
+  top: 48px;
+  height: calc(100dvh - 48px);
+  background: var(--lec-panel);
+  border-left: 1px solid var(--lec-border);
 }
 
 .resizeHandle {
-  width: 3px;
-  cursor: col-resize;
   position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  inset: 0 -2px 0 auto;
+  z-index: 4;
+  width: 4px;
+  cursor: col-resize;
+}
 
-  &:hover, &:active {
-    width: 5px;
-    background: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-5))
+.resizeHandle:hover,
+.resizeHandle:active {
+  background: color-mix(in srgb, var(--lec-blue) 45%, transparent);
+}
+
+@media (max-width: 48em) {
+  .header,
+  .navbar,
+  .main {
+    left: 0;
+    margin-left: 0;
+  }
+
+  .navbar {
+    width: min(320px, calc(100vw - 44px));
+    box-shadow: var(--lec-shadow);
+  }
+
+  .aside {
+    top: 48px;
+    width: min(350px, 100vw);
   }
 }

@@ -2,6 +2,10 @@ import bytes from "bytes";
 import { castToBoolean } from "@/lib/utils.tsx";
 import { AvatarIconType } from "@/features/attachments/types/attachment.types.ts";
 import { sanitizeUrl } from "@lec/doc-editor";
+import { getLecDocRuntime } from "@/lib/runtime";
+
+export type { LecDocRuntimeConfig } from "@/lib/runtime";
+export { configureLecDocRuntime, getLecDocRuntime, isDesktopMode } from "@/lib/runtime";
 
 declare global {
   interface Window {
@@ -9,20 +13,32 @@ declare global {
   }
 }
 
+function normalizedRuntimeUrl(value?: string): string | undefined {
+  if (!value) return undefined;
+  return value.replace(/\/$/, "");
+}
+
 export function getAppName(): string {
   return "Lec Doc";
 }
 
 export function getAppUrl(): string {
-  return `${window.location.protocol}//${window.location.host}`;
+  return (
+    normalizedRuntimeUrl(getLecDocRuntime().appUrl) ||
+    `${window.location.protocol}//${window.location.host}`
+  );
 }
 
 export function getBackendUrl(): string {
-  return getAppUrl() + "/api";
+  return (
+    normalizedRuntimeUrl(getLecDocRuntime().backendUrl) ||
+    getAppUrl() + "/api"
+  );
 }
 
 export function getCollaborationUrl(): string {
   const baseUrl =
+    getLecDocRuntime().collaborationUrl ||
     getConfigValue("COLLAB_URL") ||
     (import.meta.env.DEV ? process.env.APP_URL : getAppUrl());
 
@@ -51,6 +67,15 @@ export function getAvatarUrl(
 
 export function getSpaceUrl(spaceSlug: string) {
   return "/s/" + spaceSlug;
+}
+
+export function getSocketUrl(): string | undefined {
+  return normalizedRuntimeUrl(getLecDocRuntime().socketUrl);
+}
+
+export function getAssetUrl(path: string): string {
+  const base = normalizedRuntimeUrl(getLecDocRuntime().assetBaseUrl);
+  return base ? `${base}/${path.replace(/^\//, "")}` : path;
 }
 
 export function getFileUrl(src: string) {

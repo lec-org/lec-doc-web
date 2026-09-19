@@ -46,7 +46,7 @@ export interface FullEditorProps {
   slugId: string;
   title: string;
   content: string;
-  spaceSlug: string;
+  spaceSlug?: string;
   editable: boolean;
   creator?: PageUser;
   contributors?: IContributor[];

@@ -7,10 +7,10 @@ export interface IPage {
   content: string;
   icon: string;
   coverPhoto: string;
-  parentPageId: string;
-  creatorId: string;
-  spaceId: string;
-  workspaceId: string;
+  parentPageId?: string | null;
+  creatorId?: string;
+  spaceId?: string;
+  workspaceId?: string;
   isLocked: boolean;
   isBase: boolean;
   lastUpdatedById: string;
@@ -24,7 +24,7 @@ export interface IPage {
   lastUpdatedBy: ILastUpdatedBy;
   deletedBy: IDeletedBy;
   contributors?: IContributor[];
-  space: Partial<ISpace>;
+  space: Partial<ISpace> | null;
   permissions?: {
     canEdit: boolean;
     hasRestriction: boolean;
@@ -107,7 +107,7 @@ export interface IGrantPageViewInput {
 
 export interface IGrantPageViewResult {
   operationId: string;
-  status: "DONE";
+  status: "LOCAL_PENDING" | "NOTIFICATION_PENDING" | "DONE";
 }
 
 export interface IPageControlInput {

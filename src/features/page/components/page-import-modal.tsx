@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import { getFileImportSizeLimit } from "@/lib/config.ts";
 import { formatBytes } from "@/lib";
 import { getFileTaskById } from "@/features/file-task/services/file-task-service.ts";
+import { getApiErrorMessage } from "@/lib/api-error.ts";
 import { queryClient } from "@/lib/query-client";
 import { useQueryEmit } from "@/features/websocket/use-query-emit.ts";
 import bytes from "bytes";
@@ -140,7 +141,7 @@ function ImportFormatSelection({ spaceId, onClose }: ImportFormatSelection) {
         id: "import",
         color: "red",
         title: t("Failed to upload import file"),
-        message: err?.response.data.message,
+        message: getApiErrorMessage(err, t("Failed to upload import file")),
         icon: <IconX size={18} />,
         loading: false,
         withCloseButton: true,
@@ -215,7 +216,7 @@ function ImportFormatSelection({ spaceId, onClose }: ImportFormatSelection) {
           message: t(
             "Something went wrong while importing pages: {{reason}}.",
             {
-              reason: err.response?.data.message,
+              reason: getApiErrorMessage(err, t("Unknown error")),
             },
           ),
           icon: <IconX size={18} />,

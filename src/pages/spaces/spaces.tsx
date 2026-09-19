@@ -1,41 +1,33 @@
-import { Container, Title, Text, Group, Box } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { useGetSpacesQuery } from "@/features/space/queries/space-query";
 import CreateSpaceModal from "@/features/space/components/create-space-modal";
 import { AllSpacesList } from "@/features/space/components/spaces-page";
 import FavoriteSpacesGrid from "@/features/space/components/spaces-page/favorite-spaces-grid";
 import { usePaginateAndSearch } from "@/hooks/use-paginate-and-search";
-import useUserRole from "@/hooks/use-user-role";
-import { DocumentTitle } from "@/components/ui/document-title.tsx";
+import { DocumentTitle } from "@/components/ui/document-title";
 
 export default function Spaces() {
   const { t } = useTranslation();
-  const { isAdmin } = useUserRole();
   const { search, cursor, goNext, goPrev, handleSearch } = usePaginateAndSearch();
-
-  const { data, isLoading } = useGetSpacesQuery({
-    cursor,
-    limit: 30,
-    query: search,
-  });
+  const { data } = useGetSpacesQuery({ cursor, limit: 30, query: search });
 
   return (
-    <>
+    <div className="lec-page">
       <DocumentTitle title={t("Spaces")} />
-
-      <Container size={"800"} pt="xl">
-        <Group justify="space-between" mb="xl">
-          <Title order={1} size="h3">{t("Spaces")}</Title>
-          {isAdmin && <CreateSpaceModal />}
-        </Group>
-
-        <FavoriteSpacesGrid />
-
-        <Box>
-          <Text size="sm" c="dimmed" mb="md">
-            {t("All spaces")}
-          </Text>
-
+      <header className="lec-page-header">
+        <div>
+          <h1 className="lec-page-title">{t("Spaces")}</h1>
+          <p className="lec-page-description">{t("Browse team knowledge areas and project documentation.")}</p>
+        </div>
+        <CreateSpaceModal />
+      </header>
+      <FavoriteSpacesGrid />
+      <section className="lec-section">
+        <div className="lec-section-heading">
+          <div><h2 className="lec-section-title">{t("All spaces")}</h2><Text size="xs" c="dimmed">{t("{{count}} spaces", { count: data?.items?.length ?? 0 })}</Text></div>
+        </div>
+        <div className="lec-card" style={{ padding: 16 }}>
           <AllSpacesList
             spaces={data?.items || []}
             onSearch={handleSearch}
@@ -44,8 +36,8 @@ export default function Spaces() {
             onNext={() => goNext(data?.meta?.nextCursor)}
             onPrev={goPrev}
           />
-        </Box>
-      </Container>
-    </>
+        </div>
+      </section>
+    </div>
   );
 }

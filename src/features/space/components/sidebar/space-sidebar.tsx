@@ -67,6 +67,14 @@ export function SpaceSidebar() {
 
   const spaceRules = space?.membership?.permissions;
   const spaceAbility = useSpaceAbility(spaceRules);
+  const canManagePages = spaceAbility.can(
+    SpaceCaslAction.Manage,
+    SpaceCaslSubject.Page,
+  );
+  const canManageSettings = spaceAbility.can(
+    SpaceCaslAction.Manage,
+    SpaceCaslSubject.Settings,
+  );
   const { handleCreate } = useTreeMutation(space?.id ?? "");
 
   if (!space) {
@@ -185,10 +193,8 @@ export function SpaceSidebar() {
             <Group gap="xs">
               <SpaceMenu
                 spaceId={space.id}
-                canManagePages={spaceAbility.can(
-                  SpaceCaslAction.Manage,
-                  SpaceCaslSubject.Page,
-                )}
+                canManagePages={canManagePages}
+                canManageSettings={canManageSettings}
                 onSpaceSettings={openSettings}
               />
 
@@ -234,11 +240,13 @@ export function SpaceSidebar() {
 interface SpaceMenuProps {
   spaceId: string;
   canManagePages: boolean;
+  canManageSettings: boolean;
   onSpaceSettings: () => void;
 }
 function SpaceMenu({
   spaceId,
   canManagePages,
+  canManageSettings,
   onSpaceSettings,
 }: SpaceMenuProps) {
   const { t } = useTranslation();
@@ -327,12 +335,14 @@ function SpaceMenu({
                 {t("Import pages")}
               </Menu.Item>
 
-              <Menu.Item
-                onClick={openExportModal}
-                leftSection={<IconFileExport size={16} />}
-              >
-                {t("Export space")}
-              </Menu.Item>
+              {canManageSettings && (
+                <Menu.Item
+                  onClick={openExportModal}
+                  leftSection={<IconFileExport size={16} />}
+                >
+                  {t("Export space")}
+                </Menu.Item>
+              )}
 
               <Menu.Divider />
 
@@ -363,12 +373,14 @@ function SpaceMenu({
             onClose={closeImportModal}
           />
 
-          <ExportModal
-            type="space"
-            id={spaceId}
-            open={exportOpened}
-            onClose={closeExportModal}
-          />
+          {canManageSettings && (
+            <ExportModal
+              type="space"
+              id={spaceId}
+              open={exportOpened}
+              onClose={closeExportModal}
+            />
+          )}
         </>
       )}
     </>

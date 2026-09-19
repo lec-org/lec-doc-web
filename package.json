@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.96.0",
   "packageManager": "pnpm@11.25.0",
+  "exports": {
+    "./embedded": "./src/embedded.tsx",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -92,9 +96,7 @@
     "mermaid": "11.16.1",
     "mitt": "3.0.1",
     "nanoid": "3.3.18",
-    "react": "19.2.7",
     "react-clear-modal": "^2.0.18",
-    "react-dom": "19.2.7",
     "react-drawio": "1.0.7",
     "react-error-boundary": "6.1.1",
     "react-helmet-async": "3.0.0",
@@ -107,6 +109,10 @@
     "yet-another-react-lightbox": "^3.32.2",
     "yjs": "^13.6.30",
     "zod": "4.3.6"
+  },
+  "peerDependencies": {
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
     "@eslint/js": "9.28.0",
@@ -132,6 +138,8 @@
     "postcss-preset-mantine": "1.18.0",
     "postcss-simple-vars": "7.0.1",
     "prettier": "3.8.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "typescript": "5.9.3",
     "typescript-eslint": "8.57.1",
     "vite": "8.0.16",

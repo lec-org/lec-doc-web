@@ -4,6 +4,7 @@ import { notifications } from "@mantine/notifications";
 import { getFileUploadSizeLimit } from "@/lib/config.ts";
 import { formatBytes } from "@/lib";
 import i18n from "@/i18n.ts";
+import { getApiErrorMessage } from "@/lib/api-error.ts";
 
 export const uploadAttachmentAction = handleAttachmentUpload({
   onUpload: async (file: File, pageId: string): Promise<any> => {
@@ -12,7 +13,7 @@ export const uploadAttachmentAction = handleAttachmentUpload({
     } catch (err) {
       notifications.show({
         color: "red",
-        message: err?.response.data.message,
+        message: getApiErrorMessage(err, i18n.t("Upload failed")),
       });
       throw err;
     }

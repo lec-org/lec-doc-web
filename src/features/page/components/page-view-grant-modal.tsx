@@ -124,7 +124,9 @@ export default function PageViewGrantModal({
           {grant.isSuccess ? (
             <Stack>
               <Alert color="green" role="status">
-                {t("View access granted")}
+                {grant.data.status === "DONE"
+                  ? t("View access granted")
+                  : t("View access grant queued")}
               </Alert>
               <Text size="sm">
                 {t("Operation UUID")}: {grant.data.operationId}

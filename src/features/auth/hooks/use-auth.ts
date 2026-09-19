@@ -96,8 +96,12 @@ export default function useAuth() {
   };
 
   const handleLogout = async () => {
-    await Promise.all([clearProtectedState(), logout()]);
-    window.location.replace(`${APP_ROUTE.AUTH.LOGIN}?logout=1`);
+    await clearProtectedState();
+    try {
+      await logout();
+    } finally {
+      window.location.replace(`${APP_ROUTE.AUTH.LOGIN}?logout=1`);
+    }
   };
 
   const handleForgotPassword = async (data: IForgotPassword) => {

@@ -1,56 +1,22 @@
 import { Group, Table, Text, Badge } from "@mantine/core";
-import {
-  useChangeMemberRoleMutation,
-  useWorkspaceMembersQuery,
-} from "@/features/workspace/queries/workspace-query.ts";
+import { useWorkspaceMembersQuery } from "@/features/workspace/queries/workspace-query.ts";
 import { CustomAvatar } from "@/components/ui/custom-avatar.tsx";
 import React from "react";
-import RoleSelectMenu from "@/components/ui/role-select-menu.tsx";
-import {
-  getUserRoleLabel,
-  userRoleData,
-} from "@/features/workspace/types/user-role-data.ts";
-import useUserRole from "@/hooks/use-user-role.tsx";
-import { UserRole } from "@/lib/types.ts";
+import { getUserRoleLabel } from "@/features/workspace/types/user-role-data.ts";
 import { useTranslation } from "react-i18next";
 import Paginate from "@/components/common/paginate.tsx";
 import { SearchInput } from "@/components/common/search-input.tsx";
 import NoTableResults from "@/components/common/no-table-results.tsx";
 import { usePaginateAndSearch } from "@/hooks/use-paginate-and-search.tsx";
-import MemberActionMenu from "@/features/workspace/components/members/components/members-action-menu.tsx";
 
 export default function WorkspaceMembersTable() {
   const { t } = useTranslation();
   const { search, cursor, goNext, goPrev, handleSearch } = usePaginateAndSearch();
-  const { data, isLoading } = useWorkspaceMembersQuery({
+  const { data } = useWorkspaceMembersQuery({
     cursor,
     limit: 100,
     query: search,
   });
-  const changeMemberRoleMutation = useChangeMemberRoleMutation();
-  const { isAdmin, isOwner } = useUserRole();
-
-  const assignableUserRoles = isOwner
-    ? userRoleData
-    : userRoleData.filter((role) => role.value !== UserRole.OWNER);
-
-  const handleRoleChange = async (
-    userId: string,
-    currentRole: string,
-    newRole: string,
-  ) => {
-    if (newRole === currentRole) {
-      return;
-    }
-
-    const memberRoleUpdate = {
-      userId: userId,
-      role: newRole,
-    };
-
-    await changeMemberRoleMutation.mutateAsync(memberRoleUpdate);
-  };
-
   return (
     <>
       <SearchInput onSearch={handleSearch} />
@@ -61,7 +27,6 @@ export default function WorkspaceMembersTable() {
               <Table.Th>{t("User")}</Table.Th>
               <Table.Th>{t("Status")}</Table.Th>
               <Table.Th>{t("Role")}</Table.Th>
-              <Table.Th aria-label={t("Action")} />
             </Table.Tr>
           </Table.Thead>
 
@@ -95,26 +60,9 @@ export default function WorkspaceMembersTable() {
                     )}
                   </Table.Td>
                   <Table.Td>
-                    {isAdmin ? (
-                      <RoleSelectMenu
-                        roles={assignableUserRoles}
-                        roleName={getUserRoleLabel(user.role)}
-                        onChange={(newRole) =>
-                          handleRoleChange(user.id, user.role, newRole)
-                        }
-                      />
-                    ) : (
-                      <Text fz="sm">{t(getUserRoleLabel(user.role))}</Text>
-                    )}
-                  </Table.Td>
-                  <Table.Td>
-                    {isAdmin && (
-                      <MemberActionMenu
-                        userId={user.id}
-                        name={user.name}
-                        deactivatedAt={user.deactivatedAt}
-                      />
-                    )}
+                    <Badge variant="light" color="gray">
+                      {t(getUserRoleLabel(user.role))}
+                    </Badge>
                   </Table.Td>
                 </Table.Tr>
               ))

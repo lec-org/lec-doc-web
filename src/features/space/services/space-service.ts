@@ -9,6 +9,7 @@ import {
 } from "@/features/space/types/space.types";
 import { IPagination, QueryParams } from "@/lib/types.ts";
 import { saveAs } from "file-saver";
+import { downloadFilename } from "@/lib/download.ts";
 
 export async function getSpaces(
   params?: QueryParams,
@@ -65,16 +66,8 @@ export async function exportSpace(data: IExportSpaceParams): Promise<void> {
     responseType: "blob",
   });
 
-  const fileName = req?.headers["content-disposition"]
-    .split("filename=")[1]
-    .replace(/"/g, "");
-
-  let decodedFileName = fileName;
-  try {
-    decodedFileName = decodeURIComponent(fileName);
-  } catch (err) {
-    // fallback to raw filename
-  }
-
-  saveAs(req.data, decodedFileName);
+  saveAs(
+    req.data,
+    downloadFilename(req?.headers["content-disposition"], `space-export-${Date.now()}.zip`),
+  );
 }

@@ -1,12 +1,17 @@
 import axios, { AxiosInstance } from "axios";
 import APP_ROUTE from "@/lib/app-route.ts";
 import { clearProtectedState } from "@/features/auth/protected-session";
+import { getBackendUrl } from "@/lib/config";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "/api",
   withCredentials: true,
   xsrfCookieName: "lecCsrf",
   xsrfHeaderName: "x-lec-csrf",
+});
+
+api.interceptors.request.use((config) => {
+  if (!config.baseURL) config.baseURL = getBackendUrl();
+  return config;
 });
 
 api.interceptors.response.use(
@@ -24,7 +29,7 @@ api.interceptors.response.use(
   },
   async (error) => {
     const status = error.response?.status;
-    if (status === 401 || status === 403) {
+    if (status === 401) {
       const publicPage = /^\/(login|docs|share)(\/|$)/.test(
         window.location.pathname,
       );
@@ -37,7 +42,7 @@ api.interceptors.response.use(
       if (!anonymousProbe) {
         try {
           await clearProtectedState();
-          if (status === 401) redirectToLogin();
+          redirectToLogin();
         } catch {
           // 清理失败时保留锁定界面，不重新显示缓存文档。
         }

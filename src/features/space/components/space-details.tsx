@@ -104,19 +104,23 @@ export default function SpaceDetails({ spaceId, readOnly }: SpaceDetailsProps) {
                 </ResponsiveSettingsControl>
               </ResponsiveSettingsRow>
 
-              <Divider my="lg" />
+              {!space.isDefaultPersonal && (
+                <>
+                  <Divider my="lg" />
 
-              <ResponsiveSettingsRow>
-                <ResponsiveSettingsContent>
-                  <Text size="md">{t("Delete space")}</Text>
-                  <Text size="sm" c="dimmed">
-                    {t("Delete this space with all its pages and data.")}
-                  </Text>
-                </ResponsiveSettingsContent>
-                <ResponsiveSettingsControl>
-                  <DeleteSpaceModal space={space} />
-                </ResponsiveSettingsControl>
-              </ResponsiveSettingsRow>
+                  <ResponsiveSettingsRow>
+                    <ResponsiveSettingsContent>
+                      <Text size="md">{t("Delete space")}</Text>
+                      <Text size="sm" c="dimmed">
+                        {t("Delete this space with all its pages and data.")}
+                      </Text>
+                    </ResponsiveSettingsContent>
+                    <ResponsiveSettingsControl>
+                      <DeleteSpaceModal space={space} />
+                    </ResponsiveSettingsControl>
+                  </ResponsiveSettingsRow>
+                </>
+              )}
 
               <ExportModal
                 type="space"

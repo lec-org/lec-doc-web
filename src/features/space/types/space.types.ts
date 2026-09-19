@@ -19,12 +19,14 @@ export interface ISpaceSettings {
 }
 
 export interface ISpace {
+  kind?: "personal" | "team";
   id: string;
   name: string;
   description: string;
   logo?: string;
   slug: string;
   isPersonal?: boolean;
+  isDefaultPersonal?: boolean;
   hostname: string;
   creatorId: string;
   createdAt: Date;

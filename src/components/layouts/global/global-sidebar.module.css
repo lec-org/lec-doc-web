@@ -1,109 +1,75 @@
 .navbar {
-    height: 100%;
-    width: 100%;
-    padding: var(--mantine-spacing-md);
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  padding: 14px 10px;
+  background: var(--lec-panel);
+}
+
+.heading {
+  padding: 0 10px 10px;
 }
 
 .section {
-    padding-bottom: var(--mantine-spacing-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.link {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    font-size: var(--mantine-font-size-sm);
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
-    padding-left: var(--mantine-spacing-xs);
-    min-height: 30px;
-    border-radius: var(--mantine-radius-sm);
-    font-weight: 500;
-    user-select: none;
+.link,
+.spaceItem {
+  display: flex;
+  width: 100%;
+  min-height: 34px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--lec-muted);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
 
-    @mixin hover {
-        background-color: light-dark(
-                var(--mantine-color-gray-1),
-                var(--mantine-color-dark-6)
-        );
-        color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-    }
+.link:hover,
+.spaceItem:hover {
+  color: var(--lec-text);
+  background: var(--lec-hover);
+}
 
-    &:focus-visible {
-        outline: 2px solid var(--mantine-primary-color-filled);
-        outline-offset: 2px;
-    }
-
-    &[data-active] {
-        &,
-        & :hover {
-            background-color: light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
-            color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-        }
-    }
-
-    &[data-disabled] {
-        cursor: not-allowed;
-        opacity: 0.5;
-
-        @mixin hover {
-            background-color: transparent;
-            color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
-        }
-    }
+.link[data-active] {
+  color: var(--lec-blue);
+  background: var(--lec-active);
 }
 
 .linkIcon {
-    color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
-    margin-right: var(--mantine-spacing-sm);
-    width: rem(16px);
-    height: rem(16px);
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+}
+
+.shortcut {
+  margin-left: auto;
+  color: var(--lec-muted);
+  font-size: 11px;
+}
+
+.divider {
+  height: 1px;
+  margin: 14px 2px 10px;
+  background: var(--lec-border);
 }
 
 .sectionHeader {
-    padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
-    font-size: var(--mantine-font-size-xs);
-    color: var(--mantine-color-dimmed);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.spacer {
-    flex: 1;
-}
-
-.bottomSection {
-    padding-top: var(--mantine-spacing-xs);
-    border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-}
-
-.spaceItem {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: var(--mantine-spacing-sm);
-    text-decoration: none;
-    font-size: var(--mantine-font-size-sm);
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
-    padding-left: var(--mantine-spacing-xs);
-    min-height: 30px;
-    border-radius: var(--mantine-radius-sm);
-    font-weight: 500;
-    user-select: none;
-
-    @mixin hover {
-        background-color: light-dark(
-                var(--mantine-color-gray-1),
-                var(--mantine-color-dark-6)
-        );
-        color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
-    }
-
-    &:focus-visible {
-        outline: 2px solid var(--mantine-primary-color-filled);
-        outline-offset: 2px;
-    }
+  padding: 0 10px 7px;
+  color: var(--lec-muted);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
