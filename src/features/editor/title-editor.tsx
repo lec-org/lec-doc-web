@@ -33,7 +33,6 @@ export interface TitleEditorProps {
   pageId: string;
   slugId: string;
   title: string;
-  spaceSlug?: string;
   editable: boolean;
   isBase?: boolean;
 }
@@ -42,7 +41,6 @@ export function TitleEditor({
   pageId,
   slugId,
   title,
-  spaceSlug,
   editable,
   isBase,
 }: TitleEditorProps) {
@@ -111,7 +109,7 @@ export function TitleEditor({
   useEffect(() => {
     // Canonicalize only the path slug; keep query params (?row=, ?view=
     // deep links) and the hash anchor intact.
-    const pageSlug = buildPageUrl(spaceSlug, slugId, title);
+    const pageSlug = buildPageUrl(undefined, slugId, title);
     navigate(
       {
         pathname: pageSlug,
@@ -120,7 +118,7 @@ export function TitleEditor({
       },
       { replace: true },
     );
-  }, [title]);
+  }, [navigate, slugId, title]);
 
   const saveTitle = useCallback(() => {
     if (!titleEditor || activePageId !== pageId) return;

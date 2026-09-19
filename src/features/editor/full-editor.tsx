@@ -46,7 +46,6 @@ export interface FullEditorProps {
   slugId: string;
   title: string;
   content: string;
-  spaceSlug?: string;
   editable: boolean;
   creator?: PageUser;
   contributors?: IContributor[];
@@ -58,7 +57,6 @@ export function FullEditor({
   title,
   slugId,
   content,
-  spaceSlug,
   editable,
   creator,
   contributors,
@@ -99,7 +97,6 @@ export function FullEditor({
         pageId={pageId}
         slugId={slugId}
         title={title}
-        spaceSlug={spaceSlug}
         editable={editable}
       />
       <PageByline

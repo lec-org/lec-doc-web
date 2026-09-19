@@ -91,7 +91,7 @@ function TransclusionReferenceBody({
     const base = source?.spaceSlug
       ? buildPageUrl(source.spaceSlug, source.slugId, source.title)
       : sourcePageId
-        ? `/p/${sourcePageId}`
+        ? `/wiki/${sourcePageId}`
         : null;
     if (!base) return null;
     return transclusionId ? `${base}#${transclusionId}` : base;

@@ -93,7 +93,7 @@ export default function App() {
         <Route path="/share/:shareId" element={<ShareRedirect />} />
 
         <Route element={<Layout />}>
-          <Route path="/p/:pageSlug" element={<Page />} />
+          <Route path="/wiki/:pageSlug" element={<Page />} />
           <Route path="/home" element={<Home />} />
           <Route path="/spaces" element={<SpacesPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
@@ -103,7 +103,6 @@ export default function App() {
           <Route path="/labels/:labelName" element={<LabelPage />} />
           <Route path="/s/:spaceSlug" element={<SpaceHome />} />
           <Route path="/s/:spaceSlug/trash" element={<SpaceTrash />} />
-          <Route path="/s/:spaceSlug/p/:pageSlug" element={<Page />} />
 
           <Route path="/settings">
             <Route index element={<Navigate to="account/profile" replace />} />

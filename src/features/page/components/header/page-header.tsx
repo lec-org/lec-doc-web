@@ -17,10 +17,11 @@ interface Props {
 export default function PageHeader({ readOnly }: Props) {
   const { t } = useTranslation();
   const { spaceSlug, pageSlug } = useParams();
-  const { data: space } = useGetSpaceBySlugQuery(spaceSlug);
   const { data: page } = usePageQuery({
     pageId: extractPageSlugId(pageSlug),
   });
+  const effectiveSpaceSlug = spaceSlug ?? page?.space?.slug;
+  const { data: space } = useGetSpaceBySlugQuery(page?.spaceId ?? effectiveSpaceSlug);
 
   // Restricted pages are never publicly reachable, so the chip only shows on
   // pages the public site actually serves.
@@ -34,7 +35,7 @@ export default function PageHeader({ readOnly }: Props) {
     <div className={classes.header} data-page-header="true">
       <Group justify="space-between" h="100%" px="md" wrap="nowrap" className={classes.group}>
         <Group gap="xs" wrap="nowrap" style={{ minWidth: 0 }}>
-          {spaceSlug && <Breadcrumb />}
+          {space?.isPersonal === false && <Breadcrumb spaceSlug={effectiveSpaceSlug} />}
 
           {showPublicBadge && (
             <Tooltip label={t("Open public page")} openDelay={250} withArrow>

@@ -117,7 +117,7 @@ export default function SyncBlockReferencesDropdown({
                               data.source.slugId,
                               data.source.title,
                             )
-                          : `/p/${data.source.id}`
+                          : `/wiki/${data.source.id}`
                       }
                       className={classes.bannerLink}
                       onClick={() => handleOpenChange(false)}
@@ -143,7 +143,7 @@ export default function SyncBlockReferencesDropdown({
                 const isCurrent = page.id === currentPageId;
                 const href = page.spaceSlug
                   ? buildPageUrl(page.spaceSlug, page.slugId, page.title)
-                  : `/p/${page.id}`;
+                  : `/wiki/${page.id}`;
                 const title = page.title?.length ? page.title : t("Untitled");
                 return (
                   <li key={page.id}>

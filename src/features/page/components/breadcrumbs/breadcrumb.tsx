@@ -30,13 +30,14 @@ function getTitle(node: SpaceTreeNode, t: TFunction) {
   return name;
 }
 
-export default function Breadcrumb() {
+export default function Breadcrumb({ spaceSlug: providedSpaceSlug }: { spaceSlug?: string }) {
   const { t } = useTranslation();
   const treeData = useAtomValue(treeDataAtom);
   const [breadcrumbNodes, setBreadcrumbNodes] = useState<
     SpaceTreeNode[] | null
   >(null);
-  const { pageSlug, spaceSlug } = useParams();
+  const { pageSlug } = useParams();
+  const spaceSlug = providedSpaceSlug;
   const { data: currentPage } = usePageQuery({
     pageId: extractPageSlugId(pageSlug),
   });

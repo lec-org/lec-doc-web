@@ -140,7 +140,6 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
         title={page.title}
         content={page.content}
         slugId={page.slugId}
-        spaceSlug={effectiveSpaceSlug}
         editable={canEdit}
         creator={page.creator}
         contributors={page.contributors}

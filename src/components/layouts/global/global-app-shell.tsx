@@ -1,7 +1,7 @@
 import { AppShell, Container } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import SettingsSidebar from "@/components/settings/settings-sidebar";
 import {
@@ -16,6 +16,8 @@ import Aside from "@/components/layouts/global/aside";
 import GlobalSidebar from "@/components/layouts/global/global-sidebar";
 import { ASIDE_PANEL_ID } from "@/hooks/use-toggle-aside";
 import { MAIN_CONTENT_ID, SkipToMain } from "@/components/ui/skip-to-main";
+import { usePageQuery } from "@/features/page/queries/page-query";
+import { extractPageSlugId } from "@/lib";
 import classes from "./app-shell.module.css";
 
 export default function GlobalAppShell({ children }: { children: React.ReactNode }) {
@@ -27,10 +29,13 @@ export default function GlobalAppShell({ children }: { children: React.ReactNode
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
+  const { pageSlug } = useParams();
   const isSettingsRoute = location.pathname.startsWith("/settings");
-  const isSpaceRoute = location.pathname.startsWith("/s/");
-  const isPageRoute = location.pathname.includes("/p/");
-  const secondaryWidth = isSpaceRoute ? spaceSidebarWidth : 236;
+  const isPageRoute = location.pathname.startsWith("/wiki/");
+  const isSpaceHomeRoute = location.pathname.startsWith("/s/") && !isPageRoute;
+  const { data: page } = usePageQuery({ pageId: isPageRoute ? extractPageSlugId(pageSlug) : undefined });
+  const showSpaceSidebar = isSpaceHomeRoute || (isPageRoute && page?.space?.isPersonal === false);
+  const secondaryWidth = showSpaceSidebar ? spaceSidebarWidth : 236;
 
   useEffect(() => {
     const stop = () => setIsResizing(false);
@@ -77,18 +82,18 @@ export default function GlobalAppShell({ children }: { children: React.ReactNode
           className={classes.navbar}
           withBorder={false}
           aria-label={
-            isSpaceRoute
+            showSpaceSidebar
               ? t("Space navigation")
               : isSettingsRoute
                 ? t("Settings navigation")
                 : t("Main navigation")
           }
         >
-          {isSpaceRoute && (
+          {showSpaceSidebar && (
             <div className={classes.resizeHandle} onMouseDown={() => setIsResizing(true)} />
           )}
-          {isSpaceRoute ? (
-            <SpaceSidebar />
+          {showSpaceSidebar ? (
+            <SpaceSidebar spaceId={page?.spaceId} spaceSlug={page?.space?.slug} />
           ) : isSettingsRoute ? (
             <SettingsSidebar />
           ) : (

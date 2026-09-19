@@ -54,7 +54,7 @@ import { mobileSidebarAtom } from "@/components/layouts/global/hooks/atoms/sideb
 import { useToggleSidebar } from "@/components/layouts/global/hooks/hooks/use-toggle-sidebar.ts";
 import { searchSpotlight } from "@/features/search/constants";
 
-export function SpaceSidebar() {
+export function SpaceSidebar({ spaceId, spaceSlug: providedSpaceSlug }: { spaceId?: string; spaceSlug?: string }) {
   const { t } = useTranslation();
   const location = useLocation();
   const [opened, { open: openSettings, close: closeSettings }] =
@@ -62,8 +62,9 @@ export function SpaceSidebar() {
   const [mobileSidebarOpened] = useAtom(mobileSidebarAtom);
   const toggleMobileSidebar = useToggleSidebar(mobileSidebarAtom);
 
-  const { spaceSlug } = useParams();
-  const { data: space } = useGetSpaceBySlugQuery(spaceSlug);
+  const { spaceSlug: routeSpaceSlug } = useParams();
+  const spaceSlug = providedSpaceSlug ?? routeSpaceSlug;
+  const { data: space } = useGetSpaceBySlugQuery(spaceId ?? spaceSlug);
 
   const spaceRules = space?.membership?.permissions;
   const spaceAbility = useSpaceAbility(spaceRules);

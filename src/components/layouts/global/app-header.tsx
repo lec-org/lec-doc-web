@@ -25,7 +25,9 @@ import { useToggleSidebar } from "@/components/layouts/global/hooks/hooks/use-to
 import { searchSpotlight } from "@/features/search/constants";
 import { platformModifierLabel } from "@/lib";
 import { useGetSpaceBySlugQuery } from "@/features/space/queries/space-query";
+import { usePageQuery } from "@/features/page/queries/page-query";
 import { useTreeMutation } from "@/features/page/tree/hooks/use-tree-mutation";
+import { extractPageSlugId } from "@/lib";
 import CreateSpaceModal from "@/features/space/components/create-space-modal";
 import { NotificationPopover } from "@/features/notification/components/notification-popover";
 import TopMenu from "./top-menu";
@@ -44,8 +46,9 @@ export function AppHeader() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { spaceSlug } = useParams();
-  const { data: space } = useGetSpaceBySlugQuery(spaceSlug);
+  const { spaceSlug, pageSlug } = useParams();
+  const { data: page } = usePageQuery({ pageId: extractPageSlugId(pageSlug) });
+  const { data: space } = useGetSpaceBySlugQuery(spaceSlug ?? page?.spaceId);
   const { handleCreate } = useTreeMutation(space?.id ?? "");
   const [mobileOpened] = useAtom(mobileSidebarAtom);
   const [desktopOpened] = useAtom(desktopSidebarAtom);

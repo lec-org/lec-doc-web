@@ -50,22 +50,14 @@ function appendSearchParams(
 }
 
 export const buildPageUrl = (
-  spaceName: string,
+  _spaceName: string | undefined,
   pageSlugId: string,
-  pageTitle?: string,
+  _pageTitle?: string,
   anchorId?: string,
   search?: string[],
   wholeWord?: boolean,
 ): string => {
-  let url: string;
-  if (spaceName === undefined) {
-    url = `/p/${buildPageSlug(pageSlugId, pageTitle)}`;
-  } else {
-    url = `/s/${spaceName}/p/${buildPageSlug(pageSlugId, pageTitle)}`;
-  }
-
-  url = appendSearchParams(url, search, wholeWord);
-
+  const url = appendSearchParams(`/wiki/${pageSlugId}`, search, wholeWord);
   return anchorId ? `${url}#${anchorId}` : url;
 };
 
