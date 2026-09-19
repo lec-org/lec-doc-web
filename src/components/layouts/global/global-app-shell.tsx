@@ -14,7 +14,6 @@ import { SpaceSidebar } from "@/features/space/components/sidebar/space-sidebar"
 import { AppHeader } from "@/components/layouts/global/app-header";
 import Aside from "@/components/layouts/global/aside";
 import GlobalSidebar from "@/components/layouts/global/global-sidebar";
-import IconSidebar from "@/components/layouts/global/icon-sidebar";
 import { ASIDE_PANEL_ID } from "@/hooks/use-toggle-aside";
 import { MAIN_CONTENT_ID, SkipToMain } from "@/components/ui/skip-to-main";
 import classes from "./app-shell.module.css";
@@ -51,7 +50,6 @@ export default function GlobalAppShell({ children }: { children: React.ReactNode
   return (
     <>
       <SkipToMain />
-      <IconSidebar />
       <AppShell
         className={classes.shell}
         header={{ height: 48 }}

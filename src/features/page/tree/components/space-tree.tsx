@@ -31,9 +31,10 @@ import { SpaceTreeRow } from "./space-tree-row";
 interface SpaceTreeProps {
   spaceId: string;
   readOnly: boolean;
+  spaceSlug?: string;
 }
 
-export default function SpaceTree({ spaceId, readOnly }: SpaceTreeProps) {
+export default function SpaceTree({ spaceId, readOnly, spaceSlug }: SpaceTreeProps) {
   const { t } = useTranslation();
   const { pageSlug } = useParams();
   const [data, setData] = useAtom(treeDataAtom);
@@ -190,9 +191,9 @@ export default function SpaceTree({ spaceId, readOnly }: SpaceTreeProps) {
   // defeating memo(DocTreeRow).
   const renderRow = useCallback(
     (rowProps: Parameters<typeof SpaceTreeRow>[0]) => (
-      <SpaceTreeRow {...rowProps} readOnly={readOnly} />
+      <SpaceTreeRow {...rowProps} readOnly={readOnly} spaceSlug={spaceSlug} />
     ),
-    [readOnly],
+    [readOnly, spaceSlug],
   );
   const disableDragDrop = useCallback(
     (n: SpaceTreeNode) => n.canEdit === false,

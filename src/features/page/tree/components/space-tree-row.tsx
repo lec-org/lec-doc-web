@@ -36,6 +36,7 @@ import { updateTreeNodeIcon } from "@/features/page/tree/utils/utils.ts";
 
 type SpaceTreeRowProps = RenderRowProps<SpaceTreeNode> & {
   readOnly: boolean;
+  spaceSlug?: string;
 };
 
 export function SpaceTreeRow({
@@ -47,9 +48,11 @@ export function SpaceTreeRow({
   tabIndex,
   treeItemProps,
   readOnly,
+  spaceSlug: explicitSpaceSlug,
 }: SpaceTreeRowProps) {
   const { t } = useTranslation();
-  const { spaceSlug } = useParams();
+  const { spaceSlug: routeSpaceSlug } = useParams();
+  const spaceSlug = explicitSpaceSlug ?? routeSpaceSlug;
   const updatePageMutation = useUpdatePageMutation();
   const [, setTreeData] = useAtom(treeDataAtom);
   const emit = useQueryEmit();

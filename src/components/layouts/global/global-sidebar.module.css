@@ -73,3 +73,8 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+.personalTree {
+  min-height: 0;
+  overflow: auto;
+}

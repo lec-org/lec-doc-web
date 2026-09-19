@@ -4,13 +4,11 @@
 }
 
 .header {
-  left: 56px;
   background: var(--lec-panel);
   border-bottom: 1px solid var(--lec-border);
 }
 
 .navbar {
-  left: 56px;
   top: 48px;
   height: calc(100dvh - 48px);
   background: var(--lec-panel);
@@ -19,7 +17,6 @@
 
 .main {
   min-height: 100dvh;
-  margin-left: 56px;
   background: var(--lec-panel);
 }
 
@@ -44,13 +41,6 @@
 }
 
 @media (max-width: 48em) {
-  .header,
-  .navbar,
-  .main {
-    left: 0;
-    margin-left: 0;
-  }
-
   .navbar {
     width: min(320px, calc(100vw - 44px));
     box-shadow: var(--lec-shadow);

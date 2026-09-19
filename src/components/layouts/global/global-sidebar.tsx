@@ -12,11 +12,9 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { mobileSidebarAtom } from "./hooks/atoms/sidebar-atom";
 import { useToggleSidebar } from "./hooks/hooks/use-toggle-sidebar";
-import { useFavoritesQuery } from "@/features/favorite/queries/favorite-query";
-import { getSpaceUrl } from "@/lib/config";
 import { platformModifierLabel } from "@/lib";
-import { CustomAvatar } from "@/components/ui/custom-avatar";
-import { AvatarIconType } from "@/features/attachments/types/attachment.types";
+import { useGetSpacesQuery } from "@/features/space/queries/space-query";
+import SpaceTree from "@/features/page/tree/components/space-tree";
 import classes from "./global-sidebar.module.css";
 
 const items = [
@@ -32,10 +30,8 @@ export default function GlobalSidebar() {
   const { pathname } = useLocation();
   const [mobileOpened] = useAtom(mobileSidebarAtom);
   const toggleMobile = useToggleSidebar(mobileSidebarAtom);
-  const { data } = useFavoritesQuery("space");
-  const favorites = (data?.pages.flatMap((page) => page.items) ?? [])
-    .filter((favorite) => favorite.space)
-    .slice(0, 5);
+  const { data } = useGetSpacesQuery({ limit: 100 });
+  const personalSpace = data?.items.find((space) => space.isDefaultPersonal);
   const closeMobile = () => mobileOpened && toggleMobile();
 
   return (
@@ -64,29 +60,16 @@ export default function GlobalSidebar() {
       </nav>
 
       <div className={classes.divider} />
-      <div className={classes.sectionHeader}>{t("Pinned spaces")}</div>
-      <div className={classes.section}>
-        {favorites.length ? (
-          favorites.map((favorite) => (
-            <Link
-              key={favorite.id}
-              className={classes.spaceItem}
-              to={getSpaceUrl(favorite.space!.slug)}
-              onClick={closeMobile}
-            >
-              <CustomAvatar
-                name={favorite.space!.name}
-                avatarUrl={favorite.space!.logo}
-                type={AvatarIconType.SPACE_ICON}
-                color="initials"
-                variant="filled"
-                size={22}
-              />
-              <Text size="sm" truncate>{favorite.space!.name}</Text>
-            </Link>
-          ))
+      <div className={classes.sectionHeader}>{t("Personal knowledge space")}</div>
+      <div className={classes.personalTree} onClick={closeMobile}>
+        {personalSpace ? (
+          <SpaceTree
+            spaceId={personalSpace.id}
+            spaceSlug={personalSpace.slug}
+            readOnly={false}
+          />
         ) : (
-          <Text size="xs" c="dimmed" px={10} py={6}>{t("Favorite spaces appear here")}</Text>
+          <Text size="xs" c="dimmed" px={10} py={6}>{t("No pages yet")}</Text>
         )}
       </div>
     </aside>
